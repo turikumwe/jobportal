@@ -1,0 +1,17 @@
+include:
+  - _protected/tests/common
+  - _protected/tests/console
+  - _protected/tests/backend
+  - _protected/tests/frontend
+  - _protected/tests/api
+
+paths:
+  log: _protected/tests/_output
+
+settings:
+  colors: true
+
+db:
+  dsn: mysql:host=localhost;port=3306;dbname=jobportal_db-test
+  user: root
+  password: mysql

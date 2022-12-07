@@ -1,0 +1,52 @@
+# JS
+node_modules
+spa/npm-debug.log
+spa/yarn-error.log
+
+# IDE
+.idea
+nbproject
+.buildpath
+.project
+.settings
+
+# windows thumbnail cache
+Thumbs.db
+
+# Vagrant
+/.vagrant
+
+# Tests
+tests/codeception/*/_support/_generated/*
+# yii console command
+/yii
+
+#envormennt file
+.env
+
+# composer itself is not needed
+composer.phar
+
+
+# Mac DS_Store Files
+.DS_Store
+
+# phpunit itself is not needed
+phpunit.phar
+
+# local phpunit config
+/phpunit.xml
+
+# composer vendor dir
+/_protected/vendor/
+/storage/*
+/assets/*
+/static/*
+/storage/careerguidance
+
+# runtime dir
+/_protected/frontend/runtime/
+/_protected/backend/runtime/
+
+#config
+_protected/common/config/base.php

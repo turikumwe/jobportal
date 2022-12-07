@@ -1,0 +1,12 @@
+class_name: AcceptanceTester
+modules:
+    enabled:
+        - PhpBrowser:
+            url: http://jobportal.oo/backend/sign-in/login
+            browser: firefox
+        - Yii2:
+            part: orm
+            entryScript: index-test.php
+            cleanup: false
+            configFile: '../config/backend/acceptance.php'
+        - tests\common\_support\FixtureHelper

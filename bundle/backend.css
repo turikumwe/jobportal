@@ -1,0 +1,12 @@
+.btn{
+    border-radius: 0 !important;   
+}
+
+.form-control{
+    border-radius: 0 !important;
+}
+
+form div.required label.control-label:after {
+    content:" * ";
+    color:red;
+}
