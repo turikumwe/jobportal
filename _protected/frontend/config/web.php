@@ -30,6 +30,9 @@ $config = [
         'news' => [
             'class' => 'frontend\modules\news\News',
         ],
+        'hr' => [
+            'class' => 'frontend\modules\hr\HR',
+        ],
         // Allowed IPs, localhost by default. Set to false to allow all IPs.
         'ipFilters' => array('127.0.0.1', '::1'),
         // Valid PHP callback that returns if user should be allowed to use web shell.

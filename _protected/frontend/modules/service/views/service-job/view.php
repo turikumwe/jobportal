@@ -245,6 +245,27 @@ $this->title = Yii::t('backend', 'Job');
                                 };
                                 ?></div>
                         </div>
+                        <div class="mt-4">
+                            <div class="pxp-single-job-side-info-label pxp-text-light">Required assessment(s)</div>
+                            <div class="pxp-single-job-side-info-data"><?php
+                                $existing_job_assessments = \common\models\JobAssessment::findByJobId($model->id);
+                                if (count($existing_job_assessments) > 0) {
+                                    $counter = 1;
+                                    foreach ($existing_job_assessments as $current_assessment) {
+                                        $assessment = \frontend\modules\hr\models\ApiAssessments::find()->where(['id' => $current_assessment['assessment_id']])->one();
+                                        if ($counter == 1) {
+                                            echo $counter . '. ' . $assessment->name;
+                                        } else {
+                                            echo '<br />' . $counter . '. ' . $assessment->name;
+                                        }
+
+                                        $counter++;
+                                    }
+                                } else {
+                                    echo 'None';
+                                }
+                                ?></div>
+                        </div>
 
                     </div>
 

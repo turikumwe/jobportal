@@ -250,6 +250,7 @@ class UserProfileSearch extends UserProfile {
         (is_null($status)) ? $query->leftJoin('js_address', 'js_address.user_id=user_profile.user_id') : $query->leftJoin('jsAddress.district');
         $query->leftJoin('js_education', 'js_education.user_id=user_profile.user_id');
         // $query->joinWith('jsExperience');
+        $query->leftJoin('user', 'user.id=user_profile.user_id');
 
         $this->load($params);
 

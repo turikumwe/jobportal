@@ -7,6 +7,7 @@ namespace frontend\modules\service\controllers;
 
 use backend\models\JobSkills;
 use common\models\JobEducationField;
+use common\models\JobAssessment;
 use backend\models\SDistrict;
 use backend\models\SEducationLevel;
 use backend\models\SSkill;
@@ -488,6 +489,7 @@ class ServiceJobController extends Controller {
                     'url' => '/service/service-job/create',
                     'profile' => User::findOne(Yii::$app->user->id),
                     'skills' => $skills,
+                    'registered_assessments' => array(),
                     'educationfields' => $educationFields,
                     'selected_job_skills' => array(),
                     'selected_education_field' => array(),
@@ -514,6 +516,7 @@ class ServiceJobController extends Controller {
         $job_fields = JobEducationField::findByJobId($model->id);
 
         $educationFields = \backend\models\SEducationField::find()->orderBy('field')->asArray()->all();
+        $job_assessments = JobAssessment::find()->all();
 
         $selected_job_skills = array();
         if (count($job_skills) > 0) {
@@ -526,6 +529,12 @@ class ServiceJobController extends Controller {
         if (count($job_fields) > 0) {
             foreach ($job_fields as $field) {
                 array_push($selected_job_fields, $field['field_id']);
+            }
+        }
+        $selected_assessments = array();
+        if (count($job_assessments) > 0) {
+            foreach ($job_assessments as $assessment) {
+                array_push($selected_assessments, $assessment->assessment_id);
             }
         }
         $skills = SSkill::find()->orderBy('skill')->asArray()->all();
@@ -543,9 +552,11 @@ class ServiceJobController extends Controller {
                         'user_companies' => $user_companies,
                         'selected_employer' => null,
                         'skills' => $skills,
+                        'registered_assessments' => \frontend\modules\hr\models\ApiAssessments::find()->all(),
                         'educationfields' => $educationFields,
                         'selected_job_skills' => $selected_job_skills,
                         'selected_education_field' => $selected_job_fields,
+                        'selected_assessments' => $selected_assessments,
                         'url' => '/service/service-job/update?id=' . $id,
                         'profile' => User::findOne(Yii::$app->user->id),
                         'opportinities' => SOpportunity::find()->firstType()->all()
@@ -684,9 +695,61 @@ class ServiceJobController extends Controller {
         $model->user_id = $user_id;
         $model->s_opportunity_id = $selected_job->s_opportunity_id;
 
+        $current_user = \common\models\UserProfile::find()->where(['user_id' => $user_id])->one();
+        $current_user_account = \common\models\User::find()->where(['id' => $user_id])->one();
+
         if (!$model->save(false)) {
             var_dump($model->errors);
             die;
+        } else {
+            //Check if the job require spefic assessment
+            $job_assessments = \common\models\JobAssessment::findByJobId($selected_job->id);
+            if (count($job_assessments) > 0) {
+                $invited_candites = 0;
+
+                //Check if this user never completed the assessment
+                $assessment_candidate_completed = \frontend\modules\hr\models\ApiAssessmentCandidate::find()->where(['user_id' => $user_id])->all();
+                $completed_assessment_ids = array();
+                if (count($assessment_candidate_completed) > 0) {
+                    foreach ($assessment_candidate_completed as $assessment) {
+                        array_push($completed_assessment_ids, $assessment->assessment_id);
+                    }
+                }
+                foreach ($job_assessments as $current_assessment) {
+
+                    if (!in_array($current_assessment['assessment_id'], $completed_assessment_ids)) {
+                        //Now invite the candidate to assessments
+                        //Save the potential candidate
+                        $candidate = new \frontend\modules\hr\models\ApiAssessmentCandidate();
+                        $candidate->user_id = $current_user->user_id;
+                        $candidate->assessment_id = $current_assessment['assessment_id'];
+                        $candidate->email = $current_user_account->email;
+                        $candidate->full_name = $current_user->firstname . ' ' . $current_user->lastname;
+                        if ($candidate->save(false)) {
+                            $invited_candites++;
+                        }
+                    }
+                }
+
+                if ($invited_candites > 0) {
+                    //Launch the send invitation job
+                    chdir('' . Yii::getAlias('@root') . DIRECTORY_SEPARATOR . '_protected' . DIRECTORY_SEPARATOR . 'console' . '');
+                    if (substr(php_uname(), 0, 7) == "Windows") {
+                        //windows
+                        pclose(popen("start /B php yii jobportal/send-bulk-invitation-for-all-assessments 1> log.txt 2>&1 &", "r"));
+                        //shell_exec('php yii jobportal/send-mail-notifications &');
+                    } else {
+                        //linux
+                        shell_exec("php yii jobportal/send-bulk-invitation-for-all-assessments > log.txt 2>&1 &");
+                    }
+                }
+                if ($invited_candites > 0) {
+                    Yii::$app->session->setFlash('warning', "Your Job application has been received successfully. "
+                            . "<br />However, you shall be required to pass required assessment for this Opportunity. Please check your email for further instructions");
+                } else {
+                    Yii::$app->session->setFlash('success', "Your job application has been received");
+                }
+            }
         }
 
         return $this->redirect(['/jobseeker/user-profile/applications']);
@@ -884,7 +947,7 @@ class ServiceJobController extends Controller {
      * @return mixed
      */
     public function actionCreate() {
-        Yii::$app->db->schema->refresh();
+
         $request = Yii::$app->request;
 
         $model = new ServiceJob();
@@ -1023,6 +1086,20 @@ class ServiceJobController extends Controller {
                     }
                     //end
                     //end
+                    //Job assessment
+                    $job_assessments = $request->post('JobAssessments');
+
+                    if (isset($job_assessments) && count($job_assessments) > 0) {
+                        foreach ($job_assessments as $job_assessments) {
+                            $job_assessment = new JobAssessment();
+                            $job_assessment->job_id = $model->id;
+                            $job_assessment->assessment_id = $job_assessments;
+
+                            if (!$job_assessment->save()) {
+                                var_dump($job_assessment->errors);
+                            }
+                        }
+                    }
                     if (intval($model->action_id) == 1) {
                         //Set the publication date
                         $model->action_id = date('Y-m-d H:i:s');
@@ -1192,8 +1269,8 @@ class ServiceJobController extends Controller {
                             $job_skill->delete();
                         }
                     }
-                    $skills = $request->post('JobSkills');
 
+                    $skills = $request->post('JobSkills');
                     if (isset($skills) && count($skills) > 0) {
                         foreach ($skills as $skill) {
                             $jobskill = new JobSkills();
@@ -1203,6 +1280,56 @@ class ServiceJobController extends Controller {
                             $jobskill->save();
                         }
                     }
+
+                    $existing_job_education_fields = JobEducationField::findByJobId($model->id);
+
+                    if (count($existing_job_education_fields) > 0) {
+                        foreach ($existing_job_education_fields as $education_field) {
+                            $job_education_field = JobEducationField::find()->where($education_field['id'])->one();
+                            $job_education_field->delete();
+                        }
+                    }
+
+                    //saving to  job_education_fields
+                    $educafields = $request->post('EducationField');
+
+                    $edufield_save = true;
+                    if (isset($educafields) && count($educafields) > 0) {
+                        foreach ($educafields as $educafield) {
+                            $edufill = new JobEducationField();
+                            $edufill->job_id = $model->id;
+                            $edufill->field_id = $educafield;
+
+                            if (!$edufill->save()) {
+                                $edufield_save = false;
+                            }
+                        }
+                    }
+
+                    $existing_job_assessments = JobAssessment::findByJobId($model->id);
+
+                    if (count($existing_job_assessments) > 0) {
+                        foreach ($existing_job_assessments as $assessment) {
+                            $job_assessment = JobAssessment::find()->where($assessment['id'])->one();
+                            $job_assessment->delete();
+                        }
+                    }
+
+                    //Job assessment
+                    $job_assessments = $request->post('JobAssessments');
+
+                    if (isset($job_assessments) && count($job_assessments) > 0) {
+                        foreach ($job_assessments as $job_assessments) {
+                            $job_assessment = new JobAssessment();
+                            $job_assessment->job_id = $model->id;
+                            $job_assessment->assessment_id = $job_assessments;
+
+                            if (!$job_assessment->save()) {
+                                var_dump($job_assessment->errors);
+                            }
+                        }
+                    }
+
                     if (intval($model->action_id) == 1) {
                         //Set the publication date
                         $model->publication_date = date('Y-m-d H:i:s');

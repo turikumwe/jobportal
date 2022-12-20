@@ -1,6 +1,7 @@
 <?php
 $current_view = Yii::$app->controller->action->id;
 $current_controller = Yii::$app->controller->id;
+$current_module = Yii::$app->controller->module->id; 
 ?>
 <div class="pxp-dashboard-side-panel d-none d-lg-block">
     <div class="pxp-logo">
@@ -28,6 +29,19 @@ $current_controller = Yii::$app->controller->id;
                     <?php } ?>
                 </ul>
             </li>
+            <?php if (Yii::$app->user->can('RDB')) { ?>
+                <li class="dropdown pxp-dashboard-side-user-nav-dropdown dropdown <?= (in_array($current_module, array('hr'))) ? 'pxp-active' : '' ?>">
+                    <a role="button" class="dropdown-toggle" data-bs-toggle="dropdown">
+                        <span class="fa fa-file-text-o"></span>
+                        <div class="pxp-dashboard-side-user-nav-name">Human resource</div>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?= Yii::getAlias('@frontendUrl') . '/hr/assessments/list'; ?>">Assessment</a></li>
+                        <li><a class="dropdown-item" href="<?= Yii::getAlias('@frontendUrl') . '/hr/assessments/candidates'; ?>">Candidates</a></li>
+
+                    </ul>
+                </li>
+            <?php } ?>
             <li class="<?= (in_array($current_view, array('post-opportunity', 'post-opportunity-from-other-source', 'post-job'))) ? 'pxp-active' : '' ?>"><a href="<?= Yii::getAlias('@frontendUrl') . '/service/service-job/post-job'; ?>"><span class="fa fa-briefcase"></span>Post a Job</a></li>
             <?php if (common\models\MdMediator::isFromPublicMediator()) { ?>
                 <li class="<?= ($current_view == 'job-seeker') ? 'pxp-active' : '' ?>"><a href="<?= Yii::getAlias('@frontendUrl') . '/mediator/md-mediator/job-seeker'; ?>"><span class="fa fa-user-circle-o"></span>My job seekers</a></li>

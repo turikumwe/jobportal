@@ -147,7 +147,26 @@ $this->title = Yii::t('backend', 'Job');
                                             }
                                             echo $skill_set;
                                             ?></div></td>
-                                    <td><div class="pxp-company-dashboard-job-category">Not set</div></td>
+                                    <td><div class="pxp-company-dashboard-job-category">
+                                            <?php
+                                            $existing_job_assessments = \common\models\JobAssessment::findByJobId($job->id);
+                                            if (count($existing_job_assessments) > 0) {
+                                                $counter = 1;
+                                                foreach ($existing_job_assessments as $current_assessment) {
+                                                    $assessment = \frontend\modules\hr\models\ApiAssessments::find()->where(['id' => $current_assessment['assessment_id']])->one();
+                                                    if ($counter == 1) {
+                                                        echo $counter . '. ' . $assessment->name;
+                                                    } else {
+                                                        echo '<br />' . $counter . '. ' . $assessment->name;
+                                                    }
+
+                                                    $counter++;
+                                                }
+                                            } else {
+                                                echo 'None selected';
+                                            }
+                                            ?>
+                                        </div></td>
                                     <td>
                                         <div class="pxp-company-dashboard-job-status">
                                             <?php

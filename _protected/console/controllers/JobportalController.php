@@ -216,6 +216,60 @@ class JobportalController extends Controller {
             echo "No new vacancy to pull\n";
     }
 
+    public function actionInviteCandidates($assessment_id) {
+        $ch = curl_init(Yii::getAlias('@FullfrontendUrl') . '/hr/api/send-bulk-invitation?id=' . $assessment_id);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+        echo $result;
+    }
+    public function actionSendBulkInvitationForAllAssessments() {
+        $ch = curl_init(Yii::getAlias('@FullfrontendUrl') . '/hr/api/send-bulk-invitation-for-all-assessments');
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+        echo $result;
+    }
+
+    public function actionDeleteCandidate($candidate_id) {
+        $ch = curl_init(Yii::getAlias('@FullfrontendUrl') . '/hr/api/delete-candidate?id=' . $candidate_id);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+        echo $result;
+    }
+
+    public function actionSyncAssessmentCandidateResults($assessment_id, $testtaker_id) {
+        $ch = curl_init(Yii::getAlias('@FullfrontendUrl') . '/hr/api/sync-assessment-candidate-results?assessment_id=' . $assessment_id . '&testtaker_id=' . $testtaker_id);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+        echo $result;
+    }
+    public function actionSyncAsssessments() {
+        $ch = curl_init(Yii::getAlias('@FullfrontendUrl') . '/hr/api/sync-assessments');
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+        echo $result;
+    }
+    public function actionSyncAsssessmentDetails($id) {
+        $ch = curl_init(Yii::getAlias('@FullfrontendUrl') . '/hr/api/sync-assessment-details?id='.$id);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $result = curl_exec($ch);
+        echo $result;
+    }
+    public function actionSyncAsssessmentCandidateDetails($testtaker_id) {
+        $ch = curl_init(Yii::getAlias('@FullfrontendUrl') . '/hr/api/sync-assessment-candidate-details?tt_id='.$testtaker_id);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $result = curl_exec($ch);
+        echo $result;
+    }
+
     public function actionNotifyMatchingSkills() {
 
         //Get users with Matching skills

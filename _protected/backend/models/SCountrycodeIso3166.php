@@ -32,7 +32,7 @@ class SCountrycodeIso3166 extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['cc_iso3166', 'cc_description', 'position', 'fk_continent_region'], 'required'],
+            [['cc_iso3166', 'cc_description', 'position', 'fk_continent_region','country_code'], 'required'],
             [['position', 'fk_continent_region'], 'integer'],
             [['cc_iso3166'], 'string', 'max' => 3],
             [['cc_description'], 'string', 'max' => 250],

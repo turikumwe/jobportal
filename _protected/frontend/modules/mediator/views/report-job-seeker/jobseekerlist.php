@@ -1,4 +1,3 @@
-<!doctype html>
 <?php
 
 use yii\helpers\Url;

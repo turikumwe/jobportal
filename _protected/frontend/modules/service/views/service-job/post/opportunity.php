@@ -248,7 +248,7 @@ $model->province = SDistrict::findOne($model->district_id)['province_id'];
     </div>
 </div>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="mb-3">
             <?=
             $form->field($model, 'education_level_id')->dropDownList(
@@ -258,6 +258,26 @@ $model->province = SDistrict::findOne($model->district_id)['province_id'];
             ?>
         </div>
     </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="mb-3">
+            <label for="pxp-company-job-category" class="form-label">Required assessment test(s)</label>
+            <select class="form-control select2" multiple="" data-placeholder="Select Education Fields" tabindex="-1" aria-hidden="true" name="JobAssessments[]">
+                <?php
+                if (count($registered_assessments) > 0) {
+                    foreach ($registered_assessments as $assessment) {
+                        ?>
+                        <option value='<?= $assessment->id; ?>' <?= (in_array($assessment->id, $selected_assessments)) ? 'selected' : '' ?>><?= $assessment->name; ?></option>
+                        <?php
+                    }
+                }
+                ?>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-12">
         <div class="mb-3">
             <label for="pxp-company-job-category" class="form-label">Education Fields</label>

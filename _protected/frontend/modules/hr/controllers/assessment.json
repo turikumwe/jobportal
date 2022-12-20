@@ -1,0 +1,22 @@
+{
+    "id": 439505,
+    "name": "Communication and IT Skills",
+    "candidates": 2,
+    "invited": 2,
+    "started": 0,
+    "finished": null,
+    "knocked_out": 0,
+    "finished_percentage": null,
+    "content_type_name": "customer.assessment",
+    "status": "active",
+    "created": "2022-12-12T15:01:28.085062+02:00",
+    "modified": "2022-12-12T18:31:24.453734+02:00",
+    "is_showing_hiring_feedback_survey": false,
+    "is_candidate_hired": false,
+    "is_highlighted": false,
+    "is_empty": false,
+    "video_at_end": false,
+    "pricing_state": "allowed",
+    "has_consumed_credit": false,
+    "language": "en"
+}

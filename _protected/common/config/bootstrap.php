@@ -24,6 +24,7 @@ Yii::setAlias('@staticPath', realpath(__DIR__ . '/../../static'));
  */
 Yii::setAlias('@apiUrl', env('API_HOST_INFO') . env('API_BASE_URL'));
 Yii::setAlias('@frontendUrl', env('FRONTEND_HOST_INFO') . env('FRONTEND_BASE_URL'));
+Yii::setAlias('@FullfrontendUrl', env('FULL_FRONT_END_URL'));
 Yii::setAlias('@backendUrl', env('BACKEND_HOST_INFO') . env('BACKEND_BASE_URL'));
 Yii::setAlias('@storageUrl', env('STORAGE_HOST_INFO') . env('STORAGE_BASE_URL'));
 Yii::setAlias('@staticUrl', env('STORAGE_HOST_INFO') . env('STATIC_URL'));

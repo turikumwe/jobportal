@@ -6,8 +6,6 @@ use \yii\widgets\CustomLinkPager;
 use common\models\SOccupationGrouping;
 use frontend\modules\service\models\search\ServiceJobSearch;
 
-;
-
 /* @var $this yii\web\View */
 /* @var $model common\models\UserProfile */
 /* @var $form yii\bootstrap\ActiveForm */

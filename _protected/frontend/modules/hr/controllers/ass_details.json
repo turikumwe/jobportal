@@ -1,0 +1,406 @@
+{
+    "id": 439505,
+    "name": "Communication and IT Skills",
+    "job_role": null,
+    "other_job_role": "",
+    "public_links": [
+        {
+            "id": 479841,
+            "label": "General public link",
+            "public_uuid": "36021bd2-11ed-4b91-94d2-89112c981534",
+            "assessment": 439505,
+            "active": true,
+            "candidates_limit": 0,
+            "candidates_count": 0,
+            "invitation_link": "https://assessment.testgorilla.com/testtaker/publicinvitation/36021bd2-11ed-4b91-94d2-89112c981534",
+            "short_invitation_link": "https://app.testgorilla.com/s/w4zvyx28"
+        }
+    ],
+    "owner": 484299,
+    "benchmark": 1,
+    "benchmark_name": "All candidates",
+    "invited": 2,
+    "started": 0,
+    "finished": 0,
+    "knocked_out": 0,
+    "tests_detail": [
+        {
+            "id": 2190801,
+            "order": 1,
+            "test": {
+                "id": 35795,
+                "status": "published",
+                "name": "Communication",
+                "duration": 600,
+                "content_type_name": "test_authoring.test",
+                "custom_questions": null,
+                "algorithm": "basic",
+                "is_premium": true,
+                "is_private_test": false,
+                "num_preview_questions": 4,
+                "type": [
+                    {
+                        "id": 5,
+                        "name": "Situational judgment",
+                        "visible": true
+                    }
+                ],
+                "covered_skills": [
+                    {
+                        "id": 39518,
+                        "description": "Preview questions",
+                        "preview": true,
+                        "question_count": 4
+                    },
+                    {
+                        "id": 39519,
+                        "description": "Understanding and interpreting written communication",
+                        "preview": false,
+                        "question_count": 19
+                    },
+                    {
+                        "id": 39520,
+                        "description": "Listening actively and interpreting non-verbal cues",
+                        "preview": false,
+                        "question_count": 28
+                    },
+                    {
+                        "id": 39521,
+                        "description": "Clarifying next steps and summarizing messages effectively",
+                        "preview": false,
+                        "question_count": 20
+                    },
+                    {
+                        "id": 39522,
+                        "description": "Using professional communication etiquette",
+                        "preview": false,
+                        "question_count": 26
+                    }
+                ]
+            }
+        },
+        {
+            "id": 2190803,
+            "order": 2,
+            "test": {
+                "id": 34514,
+                "status": "published",
+                "name": "English (proficient/C1)",
+                "type": [
+                    {
+                        "id": 4,
+                        "name": "Language",
+                        "visible": true
+                    }
+                ],
+                "duration": 600,
+                "content_type_name": "test_authoring.test",
+                "custom_questions": null,
+                "algorithm": "basic",
+                "covered_skills": [
+                    {
+                        "id": 38164,
+                        "description": "Preview questions",
+                        "preview": true,
+                        "question_count": 4
+                    },
+                    {
+                        "id": 38165,
+                        "description": "Grammar & vocabulary",
+                        "preview": false,
+                        "question_count": 26
+                    },
+                    {
+                        "id": 38166,
+                        "description": "Forming complete sentences",
+                        "preview": false,
+                        "question_count": 25
+                    },
+                    {
+                        "id": 38167,
+                        "description": "Reading comprehension",
+                        "preview": false,
+                        "question_count": 25
+                    },
+                    {
+                        "id": 38168,
+                        "description": "Listening comprehension",
+                        "preview": false,
+                        "question_count": 24
+                    }
+                ],
+                "is_premium": true,
+                "is_private_test": false,
+                "num_preview_questions": 4
+            }
+        },
+        {
+            "id": 2190805,
+            "order": 3,
+            "test": {
+                "id": 869383,
+                "status": "published",
+                "name": "HR Fundamentals",
+                "type": [
+                    {
+                        "id": 6,
+                        "name": "Role specific skills",
+                        "visible": true
+                    }
+                ],
+                "duration": 600,
+                "content_type_name": "test_authoring.test",
+                "custom_questions": null,
+                "algorithm": "basic",
+                "covered_skills": [
+                    {
+                        "id": 900804,
+                        "description": "Preview questions",
+                        "preview": true,
+                        "question_count": 4
+                    },
+                    {
+                        "id": 900805,
+                        "description": "Human resources expertise",
+                        "preview": false,
+                        "question_count": 25
+                    },
+                    {
+                        "id": 900806,
+                        "description": "Business acumen",
+                        "preview": false,
+                        "question_count": 25
+                    },
+                    {
+                        "id": 900807,
+                        "description": "Recommending actionable solutions",
+                        "preview": false,
+                        "question_count": 25
+                    },
+                    {
+                        "id": 900808,
+                        "description": "Managing relationships",
+                        "preview": false,
+                        "question_count": 25
+                    }
+                ],
+                "is_premium": false,
+                "is_private_test": false,
+                "num_preview_questions": 4
+            }
+        },
+        {
+            "id": 2190806,
+            "order": 4,
+            "test": {
+                "id": 7733,
+                "status": "published",
+                "name": "Cybersecurity",
+                "type": [
+                    {
+                        "id": 6,
+                        "name": "Role specific skills",
+                        "visible": true
+                    }
+                ],
+                "duration": 600,
+                "content_type_name": "test_authoring.test",
+                "custom_questions": null,
+                "algorithm": "basic",
+                "covered_skills": [
+                    {
+                        "id": 10245,
+                        "description": "Preview Questions",
+                        "preview": true,
+                        "question_count": 4
+                    },
+                    {
+                        "id": 10241,
+                        "description": "Understanding and exploiting/mitigating threats related to endpoints",
+                        "preview": false,
+                        "question_count": 34
+                    },
+                    {
+                        "id": 10242,
+                        "description": "Understanding and exploiting/mitigating threats related to networks",
+                        "preview": false,
+                        "question_count": 33
+                    },
+                    {
+                        "id": 10243,
+                        "description": "Understanding and exploiting/mitigating threats related to the web",
+                        "preview": false,
+                        "question_count": 33
+                    }
+                ],
+                "is_premium": true,
+                "is_private_test": false,
+                "num_preview_questions": 4
+            }
+        },
+        {
+            "id": 2190808,
+            "order": 5,
+            "test": {
+                "id": 523900,
+                "status": "published",
+                "name": "Computer literacy (PC)",
+                "type": [
+                    {
+                        "id": 6,
+                        "name": "Role specific skills",
+                        "visible": true
+                    }
+                ],
+                "duration": 600,
+                "content_type_name": "test_authoring.test",
+                "custom_questions": null,
+                "algorithm": "basic",
+                "covered_skills": [
+                    {
+                        "id": 545515,
+                        "description": "Preview questions",
+                        "preview": true,
+                        "question_count": 4
+                    },
+                    {
+                        "id": 545511,
+                        "description": "Operating a computer (PC/Windows-based)",
+                        "preview": false,
+                        "question_count": 25
+                    },
+                    {
+                        "id": 545512,
+                        "description": "Navigating the internet",
+                        "preview": false,
+                        "question_count": 25
+                    },
+                    {
+                        "id": 545513,
+                        "description": "Managing email",
+                        "preview": false,
+                        "question_count": 25
+                    },
+                    {
+                        "id": 545514,
+                        "description": "Handling files & folders",
+                        "preview": false,
+                        "question_count": 25
+                    }
+                ],
+                "is_premium": true,
+                "is_private_test": false,
+                "num_preview_questions": 4
+            }
+        },
+        {
+            "id": 2190800,
+            "order": 6,
+            "test": {
+                "id": 930732,
+                "status": "draft",
+                "name": "Custom questions",
+                "type": [
+                    {
+                        "id": 1,
+                        "name": "Customer questions",
+                        "visible": false
+                    }
+                ],
+                "duration": 0,
+                "content_type_name": "test_authoring.test",
+                "custom_questions": [],
+                "algorithm": "basic",
+                "covered_skills": [
+                    {
+                        "id": 964166,
+                        "description": "Custom questions",
+                        "preview": false,
+                        "question_count": 0
+                    }
+                ],
+                "is_premium": false,
+                "is_private_test": true,
+                "num_preview_questions": 0
+            }
+        }
+    ],
+    "custom_tests_detail": [
+        {
+            "id": 930732,
+            "status": "draft",
+            "name": "Custom questions",
+            "type": [
+                {
+                    "id": 1,
+                    "name": "Customer questions",
+                    "visible": false
+                }
+            ],
+            "duration": 0,
+            "content_type_name": "test_authoring.test",
+            "custom_questions": [],
+            "algorithm": "basic",
+            "covered_skills": [
+                {
+                    "id": 964166,
+                    "description": "Custom questions",
+                    "preview": false,
+                    "question_count": 0
+                }
+            ],
+            "is_premium": false,
+            "is_private_test": true,
+            "num_preview_questions": 0
+        }
+    ],
+    "content_type_name": "customer.assessment",
+    "status": "active",
+    "modified": "2022-12-12T18:31:24.453734+02:00",
+    "is_showing_hiring_feedback_survey": false,
+    "is_candidate_hired": false,
+    "reason_for_not_fill_hiring_feedback": "",
+    "is_highlighted": false,
+    "has_culture_fit": false,
+    "candidates_source": "TG",
+    "video_id": null,
+    "video_at_end": false,
+    "use_snapshots": true,
+    "knockout_tests_detail": [
+        {
+            "id": 930733,
+            "status": "draft",
+            "name": "Qualifying questions",
+            "type": [
+                {
+                    "id": 9,
+                    "name": "Qualifying questions",
+                    "visible": false
+                }
+            ],
+            "duration": 0,
+            "content_type_name": "test_authoring.test",
+            "custom_questions": [],
+            "algorithm": "basic",
+            "covered_skills": [
+                {
+                    "id": 964167,
+                    "description": "Qualifying questions",
+                    "preview": false,
+                    "question_count": 0
+                }
+            ],
+            "is_premium": false,
+            "is_private_test": true,
+            "num_preview_questions": 0
+        }
+    ],
+    "date_of_expiry": null,
+    "assessment_extra_time": 0,
+    "pricing_state": "allowed",
+    "has_consumed_credit": false,
+    "permitted_extra_time_non_native_speakers": true,
+    "permitted_extra_time_person_for_other_capacities": true,
+    "language": "en",
+    "template_id": null
+}

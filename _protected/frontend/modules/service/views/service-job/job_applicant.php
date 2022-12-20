@@ -142,7 +142,45 @@ $this->title = Yii::t('backend', 'Job');
                                             <div class="pxp-company-dashboard-job-date"><?= $candidate->application_date; ?></div>
                                         </td>
                                         <td>
-                                            <div class="pxp-company-dashboard-job-location">Not set</div>
+                                            <div class="pxp-company-dashboard-job-location">
+                                                <?php
+                                    $existing_job_assessments = \common\models\JobAssessment::findByJobId($current_job->id);
+                                    if (count($existing_job_assessments) > 0) {
+                                        $counter = 1;
+                                        foreach ($existing_job_assessments as $current_assessment) {
+                                            $assessment = \frontend\modules\hr\models\ApiAssessments::find()->where(['id' => $current_assessment['assessment_id']])->one();
+                                            $user_assessment_results = frontend\modules\hr\models\ApiAssessmentCandidate::find()->where(['assessment_id' => $current_assessment['assessment_id']])->andWhere(['user_id' => $current_user->user_id])->one();
+                                            $status_text = "";
+
+                                            if ($counter == 1) {
+                                                if (isset($user_assessment_results->status) && $user_assessment_results->status == 'completed') {
+                                                    echo $counter . '. ' . $assessment->name;
+                                                    ?><a href="<?php echo Yii::$app->link->frontendUrl('/hr/api/candidate-result-pdf?tt_id=' . $user_assessment_results->testtaker_id . '&c_id=' . $user_assessment_results->candidate_id . '') ?>" target="_blank" title="Click to view assessment results"><span class="badge rounded-pill bg-success">Completed - <?= $user_assessment_results->average ?>%</span></a>
+                                                    <?php
+                                                }else{
+                                                    echo $counter . '. ' . $assessment->name;
+                                                    ?><a href="#" title="Click to complete the assessment"><span class="badge rounded-pill bg-warning">Pending</span></a>
+                                                    <?php
+                                                }
+                                            } else {
+                                                if (isset($user_assessment_results->status) && $user_assessment_results->status == 'completed') {
+                                                    echo '<br />'.$counter . '. ' . $assessment->name;
+                                                    ?><a href="<?php echo Yii::$app->link->frontendUrl('/hr/api/candidate-result-pdf?tt_id=' . $user_assessment_results->testtaker_id . '&c_id=' . $user_assessment_results->candidate_id . '') ?>" target="_blank" title="Click to view assessment results"><span class="badge rounded-pill bg-success">Completed</span></a>
+                                                    <?php
+                                                }else{
+                                                    echo '<br />'.$counter . '. ' . $assessment->name;
+                                                    ?><a href="#" title="Click to complete the assessment"><span class="badge rounded-pill bg-warning">Pending</span></a>
+                                                    <?php
+                                                }
+                                            }
+
+                                            $counter++;
+                                        }
+                                    } else {
+                                        echo 'Not needed';
+                                    }
+                                    ?>
+                                            </div>
                                         </td>
                                         <td>
                                             <div class="pxp-dashboard-table-options">

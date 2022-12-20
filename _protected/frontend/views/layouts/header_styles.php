@@ -26,6 +26,7 @@ $this->registerJsFile('https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootst
 
     <script src="<?= Yii::getAlias('@staticUrl') ?>/js/jquery-3.4.1.min.js"></script>
     <script src="<?= Yii::getAlias('@staticUrl') ?>/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= Yii::getAlias('@staticUrl') ?>/js/jquery.slim.min"></script>
     <script src="<?= Yii::getAlias('@staticUrl') ?>/js/owl.carousel.min.js"></script>
     <script src="<?= Yii::getAlias('@staticUrl') ?>/js/nav.js"></script>
     <script src="<?= Yii::getAlias('@staticUrl') ?>/js/main.js"></script>

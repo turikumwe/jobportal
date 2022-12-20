@@ -19,7 +19,7 @@ use yii\behaviors\BlameableBehavior;
  * @property string $deleted_at
  * @property int $deleted_by
  */
-class JsSavedEvent extends \yii\db\ActiveRecord {
+class JobAssessment extends \yii\db\ActiveRecord {
 
     use \mootensai\relation\RelationTrait;
 
@@ -42,7 +42,7 @@ class JsSavedEvent extends \yii\db\ActiveRecord {
      * {@inheritdoc}
      */
     public static function tableName() {
-        return '{{%js_saved_event}}';
+        return '{{%job_assessment}}';
     }
 
     /**
@@ -50,7 +50,7 @@ class JsSavedEvent extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['event_id', 'user_id'], 'required'],
+            [['job_id', 'assessment_id'], 'required'],
             [['created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['created_by', 'updated_by', 'deleted_by'], 'integer'],
             [['deleted_by'], 'default', 'value' => 0]
@@ -63,8 +63,8 @@ class JsSavedEvent extends \yii\db\ActiveRecord {
     public function attributeLabels() {
         return [
             'id' => Yii::t('backend', 'ID'),
-            'user_id' => Yii::t('backend', 'Use'),
-            'event_id' => Yii::t('backend', 'Event'),
+            'job_id' => Yii::t('backend', 'Job'),
+            'assessment_id' => Yii::t('backend', 'Assessment'),
             'created_at' => Yii::t('backend', 'Created At'),
             'created_by' => Yii::t('backend', 'Created By'),
             'updated_at' => Yii::t('backend', 'Updated At'),
@@ -94,24 +94,14 @@ class JsSavedEvent extends \yii\db\ActiveRecord {
      */
     public static function find() {
         $query = new \backend\models\query\SSkillQuery(get_called_class());
-        return $query->where(['js_saved_event.deleted_by' => 0]);
+        return $query->where(['job_assessment.deleted_by' => 0]);
     }
 
-    public function findByUserId($user_id) {
+    public function findByJobId($job_id) {
 
-        $skills = \backend\models\JobSkills::find()->where(['js_saved_event.deleted_by' => 0])->andWhere(['user_id' => $user_id])->asArray()->all();
+        $skills = JobAssessment::find()->where(['job_assessment.deleted_by' => 0])->andWhere(['job_id' => $job_id])->asArray()->all();
 
         return $skills;
-    }
-
-    public static function isSaved($event_id, $user_id) {
-
-        $events = JsSavedEvent::find()->where(['or',['js_saved_event.deleted_by' => null],['js_saved_event.deleted_by' => 0]])->andWhere(['event_id' => $event_id, 'user_id' => $user_id])->asArray()->all();
-
-        if (count($events) > 0) {
-            return true;
-        }
-        return false;
     }
 
     /**

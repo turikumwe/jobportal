@@ -1,0 +1,22 @@
+{
+    "id": 2757222,
+    "assessment": 439706,
+    "email": "jeanpaul.turikumwe01@gmail.com",
+    "first_name": "Patrick",
+    "last_name": "UWAMUNGU",
+    "invitation_uuid": "35f10a8a-9df0-4c22-b211-469218cc4a47",
+    "created": "2022-12-13T20:53:58.238856+02:00",
+    "testtaker_id": 1804403,
+    "status": "invited",
+    "average": null,
+    "is_with_feedback_about_hired": false,
+    "reminder_sent": false,
+    "last_reminder_sent": null,
+    "content_type_name": "test_taker.assessmentcandidature",
+    "is_hired": false,
+    "personality": null,
+    "personality_algorithm": null,
+    "greenhouse_profile_url": "",
+    "stage": "NYE",
+    "status_notification": null
+}
