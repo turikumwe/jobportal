@@ -83,7 +83,7 @@ $this->title = Yii::t('backend', 'Job');
                                         <div class="pxp-company-dashboard-candidate-avatar pxp-cover" style="background-image: url(<?= Yii::getAlias('@staticUrl') ?>/images/ph-small.jpg);"></div>
                                     </td>
                                     <td>
-                                        <a href="<?= Yii::$app->link->frontendUrl('/site/seeker-profile?idOtherProfile=' . $candidate->user_id) ?>">
+                                        <a href="<?= Yii::$app->link->frontendUrl('/jobseeker/user-profile?js=' . $candidate->user_id) ?>" target="_blank">
                                             <div class="pxp-company-dashboard-job-title"><?= $current_user->lastname . ' ' . $current_user->firstname; ?></div>
                                             <div class="pxp-company-dashboard-job-location"><span class="fa fa-globe me-1"></span><?= isset($user_address->district_id) ? SDistrict::findOne($user_address->district_id)->district : '-'; ?></div>
                                         </a>

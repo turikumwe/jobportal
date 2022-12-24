@@ -33,6 +33,25 @@ class AssessmentsController extends Controller {
                             'delete' => ['POST'],
                         ],
                     ],
+                    'access' => [
+                        'class' => \yii\filters\AccessControl::class,
+                        'only' => ['job-seeker', 'list', 'candidates', 'assessment-candidates', 'view', 'assessment-candidate', 'delete-candidate', 'sync-asssessments', 'sync-assessment-details', 'create', 'update', 'invite-candidate', 'delete'],
+                        'rules' => [
+                            [
+                                'allow' => true,
+                                'actions' => ['index-tocken'],
+                                'roles' => ['?'],
+                            ],
+                            [
+                                'allow' => true,
+                                'actions' => ['job-seeker', 'list', 'candidates', 'assessment-candidates', 'view', 'assessment-candidate', 'delete-candidate', 'sync-asssessments', 'sync-assessment-details', 'create', 'update', 'invite-candidate', 'delete'],
+                                'roles' => ['@'],
+                                'matchCallback' => function ($rule, $action) {
+                                    return Yii::$app->user->can('RDB');
+                                }
+                            ],
+                        ],
+                    ],
                 ]
         );
     }
@@ -59,8 +78,7 @@ class AssessmentsController extends Controller {
 
     public function actionList($title = null, $status = "active") {
 
-
-        Yii::$app->db->schema->refresh();
+        
         $this->layout = 'dashboard';
         $searchModel = new ApiAssessmentsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -252,11 +270,11 @@ class AssessmentsController extends Controller {
     public function actionAssessmentCandidate($id, $tt_id) {
         Yii::$app->db->schema->refresh();
 
-        $candidate = ApiAssessmentCandidate::find()->where(['testtaker_id' => $tt_id])->one();
+        $candidate = ApiAssessmentCandidate::find()->where(['testtaker_id' => $tt_id])->andWhere(['assessment_id' => $id])->one();
         if (!isset($candidate->id)) {
             throw new ForbiddenHttpException(Yii::t('yii', 'Invalid candidate.'));
         }
-        $candidate_user_profile = \common\models\UserProfile::find()->where(['user_id' => $candidate])->one();
+        $candidate_user_profile = \common\models\UserProfile::find()->where(['user_id' => $candidate->user_id])->one();
         if (!isset($candidate_user_profile->user_id)) {
             throw new ForbiddenHttpException(Yii::t('yii', 'User profile not found.'));
         }
@@ -265,7 +283,7 @@ class AssessmentsController extends Controller {
         return $this->render('view_candidate', [
                     'assessment' => $this->findModel($id),
                     'candidate' => $candidate,
-                    'candidate_details' => ApiAssessmentCandidateDetails::find()->where(['testtaker_id' => $tt_id])->one(),
+                    'candidate_details' => ApiAssessmentCandidateDetails::find()->where(['testtaker_id' => $tt_id])->andWhere(['assessment_id' => $id])->one(),
                     'candidate_user_profile' => $candidate_user_profile
         ]);
     }
@@ -303,6 +321,152 @@ class AssessmentsController extends Controller {
             throw new ForbiddenHttpException(Yii::t('yii', 'Invalid request.'));
         }
         return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionSendBulk() {
+        Yii::$app->db->schema->refresh();
+        $request = Yii::$app->request;
+        $ids = $request->post('ids'); // Array of selected candidates
+        $selected_action = $request->post('bulk_action');
+
+        $bulked_candites = 0;
+        $not_bulked_candites = 0;
+
+        switch ($selected_action) {
+            case "1": { // 1 is for reminders
+                    foreach ($ids as $id) {
+                        $current_candidate = \frontend\modules\hr\models\ApiAssessmentCandidate::find()->where(['id' => $id])->one();
+                        echo $id . '<br />';
+                        if (isset($current_candidate->user_id)) {
+
+                            //Save the candidate on the queue
+                            if ($current_candidate->status != 'completed') {
+                                $reminder = new \frontend\modules\hr\models\ApiAssessmentCandidateBulkReminder();
+                                $reminder->candidate_id = $current_candidate->candidate_id;
+                                $reminder->test_taker_id = $current_candidate->testtaker_id;
+                                $reminder->created_on = date('Y-m-d H:i:s');
+                                if ($reminder->save()) {
+                                    $bulked_candites++;
+                                }
+                            } else {
+                                $not_bulked_candites++;
+                            }
+                        }
+                        if ($bulked_candites > 0) {
+                            //Launch the send invitation job
+                            chdir('' . Yii::getAlias('@root') . DIRECTORY_SEPARATOR . '_protected' . DIRECTORY_SEPARATOR . 'console' . '');
+                            if (substr(php_uname(), 0, 7) == "Windows") {
+                                //windows
+                                pclose(popen("start /B php yii jobportal/sync-bulk-reminder 1> log.txt 2>&1 &", "r"));
+                                //shell_exec('php yii jobportal/send-mail-notifications &');
+                            } else {
+                                //linux
+                                shell_exec("php yii jobportal/sync-bulk-reminder > log.txt 2>&1 &");
+                            }
+                            $message = $bulked_candites . " candidates scheduled for assessment reminders.";
+                            if ($not_bulked_candites > 0) {
+                                $message .= ' ' . $not_bulked_candites . ' not reminded due to that, they already completed the assessment';
+                            }
+                            Yii::$app->session->setFlash('success', $message);
+                        }
+                        if ($bulked_candites == 0) {
+                            Yii::$app->session->setFlash('error', "No candidate reminded");
+                        }
+                    }
+                    return $this->redirect(Yii::$app->request->referrer);
+                }
+                break;
+            case "2": { // 1 is for results sending
+                    foreach ($ids as $id) {
+                        $current_candidate = \frontend\modules\hr\models\ApiAssessmentCandidate::find()->where(['id' => $id])->one();
+                        echo $id . '<br />';
+                        if (isset($current_candidate->user_id)) {
+
+                            //Save the candidate on the queue
+                            if ($current_candidate->status != 'completed') {
+                                $result = new \frontend\modules\hr\models\ApiAssessmentCandidateBulkResultSend();
+                                $result->candidate_id = $current_candidate->candidate_id;
+                                $result->test_taker_id = $current_candidate->testtaker_id;
+                                $result->created_on = date('Y-m-d H:i:s');
+                                if ($result->save()) {
+                                    $bulked_candites++;
+                                }
+                            } else {
+                                $not_bulked_candites++;
+                            }
+                        }
+                        if ($bulked_candites > 0) {
+                            //Launch the send invitation job
+                            chdir('' . Yii::getAlias('@root') . DIRECTORY_SEPARATOR . '_protected' . DIRECTORY_SEPARATOR . 'console' . '');
+                            if (substr(php_uname(), 0, 7) == "Windows") {
+                                //windows
+                                pclose(popen("start /B php yii jobportal/sync-bulk-result-sending 1> log.txt 2>&1 &", "r"));
+                                //shell_exec('php yii jobportal/send-mail-notifications &');
+                            } else {
+                                //linux
+                                shell_exec("php yii jobportal/sync-bulk-result-sending > log.txt 2>&1 &");
+                            }
+                            $message = $bulked_candites . " candidates scheduled for assessment results sending.";
+                            if ($not_bulked_candites > 0) {
+                                $message .= ' ' . $not_bulked_candites . ' not sent due to that, they already received their results';
+                            }
+                            Yii::$app->session->setFlash('success', $message);
+                        }
+                        if ($bulked_candites == 0) {
+                            Yii::$app->session->setFlash('error', "No result sent");
+                        }
+                    }
+                    return $this->redirect(Yii::$app->request->referrer);
+                }
+                break;
+            case "3": { // 1 is for remove from assessment
+                    foreach ($ids as $id) {
+                        $current_candidate = \frontend\modules\hr\models\ApiAssessmentCandidate::find()->where(['id' => $id])->one();
+                        echo $id . '<br />';
+                        if (isset($current_candidate->user_id)) {
+
+                            //Save the candidate on the queue
+                            if ($current_candidate->status != 'completed') {
+                                $remove = new \frontend\modules\hr\models\ApiAssessmentCandidateBulkRemove();
+                                $remove->candidate_id = $current_candidate->candidate_id;
+                                $remove->test_taker_id = $current_candidate->testtaker_id;
+                                $remove->created_on = date('Y-m-d H:i:s');
+                                if ($remove->save()) {
+                                    $bulked_candites++;
+                                }
+                            } else {
+                                $not_bulked_candites++;
+                            }
+                        }
+                        if ($bulked_candites > 0) {
+                            //Launch the send invitation job
+                            chdir('' . Yii::getAlias('@root') . DIRECTORY_SEPARATOR . '_protected' . DIRECTORY_SEPARATOR . 'console' . '');
+                            if (substr(php_uname(), 0, 7) == "Windows") {
+                                //windows
+                                pclose(popen("start /B php yii jobportal/sync-bulk-result-removal 1> log.txt 2>&1 &", "r"));
+                                //shell_exec('php yii jobportal/send-mail-notifications &');
+                            } else {
+                                //linux
+                                shell_exec("php yii jobportal/sync-bulk-result-removal > log.txt 2>&1 &");
+                            }
+                            $message = $bulked_candites . " candidates scheduled for assessment removal.";
+                            if ($not_bulked_candites > 0) {
+                                $message .= ' ' . $not_bulked_candites . ' not reminded due to that, they already removed from assessment';
+                            }
+                            Yii::$app->session->setFlash('success', $message);
+                        }
+                        if ($bulked_candites == 0) {
+                            Yii::$app->session->setFlash('error', "No candidate removed");
+                        }
+                    }
+                    return $this->redirect(Yii::$app->request->referrer);
+                }
+                break;
+            default: {
+                    return $this->redirect(Yii::$app->request->referrer);
+                    Yii::$app->session->setFlash('error', "No action done");
+                }
+        }
     }
 
     public function actionSyncAsssessments() {
@@ -469,6 +633,18 @@ class AssessmentsController extends Controller {
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionContollerActions() {
+        $actions = get_class_methods($this);
+        if (count($actions) > 0) {
+            foreach ($actions as $action) {
+                if (substr($action, 0, 6) === "action") {
+                    echo "'" . str_replace("action-", "", strtolower(preg_replace('/\B([A-Z])/', '-$1', $action))) . "',";
+                }
+            }
+        }
+        exit();
     }
 
 }

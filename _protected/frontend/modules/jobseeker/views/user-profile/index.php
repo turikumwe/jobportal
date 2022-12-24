@@ -73,6 +73,20 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                     </div>
 
                     <div class="row mt-4 mt-lg-5">
+                        <?php
+                        if (Yii::$app->session->hasFlash('error')):
+                            ?>
+                            <div class="alert alert-danger alert-dismissible">
+                                <strong><i class="icon fa fa-close"></i>Error!</strong> <?= Yii::$app->session->getFlash('error') ?>
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close" style="float: right; color: red; font-weight: bold;">&times;</a>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (Yii::$app->session->hasFlash('success')): ?>
+                            <div class="alert alert-success alert-dismissible">
+                                <strong><i class="icon fa fa-check"></i>Success!</strong> <?= Yii::$app->session->getFlash('success') ?>
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close" style="float: right; color: green; font-weight: bold;">&times;</a>
+                            </div>
+                        <?php endif; ?>
                         <div class="col-lg-7 col-xxl-8">
                             <a data-bs-toggle="modal" href="#profile-completion-modal" role="button" onclick="return check_user_completion_percentage(<?= $idOtherProfile; ?>);">
                                 <div class="progress position-relative" style="height: 30px;">
@@ -172,6 +186,67 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                                     <div id="pxpCollapseFAQs5" class="accordion-collapse collapse" aria-labelledby="pxpFAQsHeader5" data-bs-parent="#pxpFAQsAccordion">
                                         <div class="accordion-body">
                                             <?php include('drivinglicense.php'); ?>  </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="pxpFAQsHeader12">
+
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pxpCollapseFAQs12" aria-expanded="false" aria-controls="pxpCollapseFAQs12">
+                                            Assessments
+                                        </button>
+
+                                    </h2>
+                                    <div id="pxpCollapseFAQs12" class="accordion-collapse collapse" aria-labelledby="pxpFAQsHeader12" data-bs-parent="#pxpFAQsAccordion">
+                                        <div class="accordion-body">
+                                            <?php
+                                            $user_assessments = frontend\modules\hr\models\ApiAssessmentCandidate::find()->where(['user_id' => $userid])->all();
+                                            if (count($user_assessments) > 0) {
+                                                ?>
+                                                <table class="table table-hover table-bordered table-striped" style="background-color:#fff;color:#333;">
+                                                    <thead>
+                                                        <tr style="font-weight: bold;">
+                                                            <th style="width: 50%">Assessment name </th>
+                                                            <th style="width: 15%">Status </th>
+                                                            <th style="width: 15%">Average score </th>
+                                                            <th>&nbsp;</th>
+                                                        </tr>
+                                                    </thead>
+
+                                                    <tbody>
+                                                        <?php
+                                                        foreach ($user_assessments as $assessment) {
+                                                            ?>
+                                                            <tr>
+                                                                <td><?= \frontend\modules\hr\models\ApiAssessments::find()->where(['id' => $assessment->assessment_id])->one()->name; ?></td>
+                                                                <td><?= $assessment->status; ?> </td>
+                                                                <td style="text-align: right; font-weight: bold;"><?= strlen($assessment->average) > 0 ? $assessment->average . ' %' : ''; ?></td>
+                                                                <td>
+                                                                    <div class="pxp-dashboard-table-options">
+                                                                        <ul class="list-unstyled">
+                                                                            <a href="<?php echo Yii::$app->link->frontendUrl('/hr/api/candidate-send-pdf-result?tt_id=' . $assessment->testtaker_id . '&c_id=' . $assessment->candidate_id . '') ?>"><li style="size: 40px;"><button class="action-button" title="Send results to candidate"><span class="fa fa-envelope-o"></span></button></li></a>
+                                                                            <a href="<?php echo Yii::$app->link->frontendUrl('/hr/api/candidate-result-pdf?tt_id=' . $assessment->testtaker_id . '&c_id=' . $assessment->candidate_id . '') ?>" target="_blank"><li><button class="action-button" title="Download results"><span class="fa fa-download"></span></button></li></a>
+                                                                        </ul>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <?php
+                                                        }
+                                                        ?>
+
+
+                                                    </tbody>
+                                                </table>
+                                                <?php
+                                            } else {
+                                                ?>
+                                                <span class="pxp-jobs-card-3-date pxp-text-light" style="font-size: 30px;">
+                                                    Not invited to any assessment
+                                                </span>
+                                                <?php
+                                            }
+                                            ?>
+
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="accordion-item">

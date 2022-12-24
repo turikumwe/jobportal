@@ -71,7 +71,10 @@ CrudAsset::register($this);
                         <tbody><tr>
                                 <td style="font-size: 30px;">Assessment</td>
                                 <td>
-                                    <div class="pxp-candiadates-card-1-name" style="font-size: 30px;"><?= $assessment->name; ?> </div>
+                                    <div class="pxp-candiadates-card-1-name" style="font-size: 30px;">
+                                        <a href="<?= Yii::$app->link->frontendUrl('/hr/assessments/view?id=' . $assessment->id) ?>">
+                                            <?= $assessment->name; ?>
+                                        </a> </div>
                                     <div class="pxp-company-dashboard-job-title">
                                         <div class="pxp-candiadates-card-1-title" style="font-size: 20px;font-size: 20px;"><i class="fa fa-flash"></i> <?= ApiAssessmentTest::find()->where(['assessment_id' => $assessment->id])->count() ?> Test | <i class="fa fa-clock-o"></i> <?= ApiAssessments::get_assessment_duration($assessment->id) ?> Minutes | <i class="fa fa-flag-o" ></i> <?= isset(ApiAssessments::LANGUAGE_DICT['' . $assessment->language . '']) ? ApiAssessments::LANGUAGE_DICT['' . $assessment->language . ''] : $assessment->language ?></div>
                                     </div>
@@ -91,7 +94,7 @@ CrudAsset::register($this);
                                 <td>
                                     <div class="pxp-company-dashboard-job-title"> 	
                                         <div class="pxp-candiadates-card-1-name" style="font-size: 30px;"> 	<?= $candidate_user_profile->firstname . ' ' . $candidate_user_profile->lastname; ?> </div>
-                                        <div class="pxp-candiadates-card-1-title" style="font-size: 20px;font-weight: 20;"><?= $candidate->email; ?></div>
+                                        <div class="pxp-candiadates-card-1-title" style="font-size: 20px;font-weight: 20px;"><?= $candidate->email; ?></div>
                                     </div>
                                 </td>
                             </tr>

@@ -62,6 +62,10 @@ class SiteController extends Controller {
         ];
     }
 
+    public function actionLogin() {
+        return $this->redirect(['/user/sign-in/login']);
+    }
+
     /**
      * @return string
      */
@@ -471,8 +475,7 @@ class SiteController extends Controller {
         return $this->goHome();
     }
 
-    public function actionCreateaccount()
-    {
+    public function actionCreateaccount() {
         //$this->layout = 'subpage';
         $this->view->params['bgimage'] = "howtoapply.png";
 

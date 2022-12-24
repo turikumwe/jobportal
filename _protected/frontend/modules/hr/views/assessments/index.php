@@ -228,10 +228,6 @@ $this->title = Yii::t('backend', 'Job');
 </div>
 
 <script type="text/javascript">
-    $("#selectAll").click(function () {
-        $(".checkboxAll").prop('checked', $(this).prop('checked'));
-    });
-
     function sync_assessment() {
         $("#sync_ass").addClass("fa-spin");
         $.ajax({
@@ -246,49 +242,9 @@ $this->title = Yii::t('backend', 'Job');
             }
         });
     }
-    function change_status() {
-        var total_checked = $("input[type='checkbox']:checked").length;
-
-        if (parseInt($('#status :selected').val()) && total_checked > 0) {
-            if (confirm("Are sure you want to change the Job Status?")) {
-                $('#selected_status').val($('#status :selected').val());
-                $("#job_list").submit();
-            }
-
-        } else {
-            alert("Please make valid selections")
-        }
-
-    }
-    function extent_deadline(job_id) {
-        $('#job_id_to_extend').val(job_id);
-    }
-    function confirm_extention() {
-        if (confirm("Are sure you want to extend the current job application deadline?")) {
-            return true;
-        }
-        return false;
-
-    }
     function filter_selected(status) {
         window.location.href = '<?= Yii::$app->link->frontendUrl('/hr/assessments/list'); ?>' + '?status=' + status;
 
-
-    }
-    function search_job() {
-        if (parseInt($('#opportunity_type :selected').val()) > 0) {
-            window.location.href = '<?= Yii::$app->link->frontendUrl('/service/service-job/my-jobs'); ?>' + '?type=0&' + $('#opportunity_type :selected').val();
-        } else {
-            alert("Please make valid selections")
-        }
-
-    }
-    function confirm_delete() {
-        if (confirm("Are you sure want to delete this? No undo")) {
-            return true;
-        } else {
-            return false;
-        }
 
     }
 </script>

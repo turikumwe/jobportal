@@ -51,7 +51,7 @@ class ApiController extends Controller {
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($ch);
@@ -116,7 +116,7 @@ class ApiController extends Controller {
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($ch);
@@ -216,6 +216,7 @@ class ApiController extends Controller {
                 }
 
                 $tests_details = $assessment_details_data['tests_detail'];
+
                 if (count($tests_details) > 0) {
                     foreach ($tests_details as $tests_detail) {
                         //Save the test details
@@ -291,7 +292,7 @@ class ApiController extends Controller {
                                             $assessment_synchronization->save();
 
                                             //Call the candidate synchronization action
-                                            return $this->redirect(Yii::getAlias('@FullfrontendUrl') . '/hr/api/sync-assessment-candidates?id=' . $current_assessment->id);
+                                            $this->redirect(Yii::getAlias('@FullfrontendUrl') . '/hr/api/sync-assessment-candidates?id=' . $current_assessment->id);
                                         }
                                     }
                                 }
@@ -327,7 +328,7 @@ class ApiController extends Controller {
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $result = curl_exec($ch);
@@ -361,7 +362,7 @@ class ApiController extends Controller {
 
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
                 $response = curl_exec($ch);
@@ -407,8 +408,9 @@ class ApiController extends Controller {
             }
         }
     }
+
     public function actionSendBulkInvitationForAllAssessments() {
-        
+
         //Load all user who are not invited
         $assessment_candidates = ApiAssessmentCandidate::find()->where(['testtaker_id' => null])->all();
         if (count($assessment_candidates) > 0) {
@@ -427,7 +429,7 @@ class ApiController extends Controller {
 
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
                 $response = curl_exec($ch);
@@ -485,7 +487,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -497,10 +499,11 @@ class ApiController extends Controller {
 
         $query = "insert into api_requests(request_url,request_data,response_data) value('" . $url . "','Getting assessment candidates','" . str_replace("'", " ", $response) . "')";
         $conn->CreateCommand($query)->execute();
-
+        $registered_candidates_ids = array();
         if (count($response_data['results']) > 0) {
             $candidate_counter = 0;
             foreach ($response_data['results'] as $candidate_data) {
+                array_push($registered_candidates_ids, $candidate_data['id']);
                 //Update the current candidates information
                 $candidate = ApiAssessmentCandidate::find()->where(['email' => $candidate_data['email']])->andWhere(['assessment_id' => $selected_assessment->id])->one();
                 echo $candidate_data['email'] . ' - ' . $selected_assessment->id . '<br />';
@@ -593,6 +596,8 @@ class ApiController extends Controller {
                     }
                 }
             }
+            //Now delete all candidates who are not return from the list sent by the server
+            ApiAssessmentCandidate::deleteAll(['AND', 'assessment_id = '.$selected_assessment->id.'',['not in', 'candidate_id', $registered_candidates_ids]]);
         }
     }
 
@@ -607,7 +612,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
@@ -639,7 +644,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -727,7 +732,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -768,7 +773,7 @@ class ApiController extends Controller {
                 $ch = curl_init($url);
 
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -816,7 +821,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -847,7 +852,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -965,7 +970,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -991,7 +996,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token 612b49503d83735a7aaebf907bc44df32f854d12'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -1003,6 +1008,106 @@ class ApiController extends Controller {
             Yii::$app->session->setFlash('error', "An error occured while sending results");
         }
         return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionSyncSendBulkReminder() {
+        //Load pending reminders
+        $pending_reminders = \frontend\modules\hr\models\ApiAssessmentCandidateBulkReminder::find()->where(['sent_on' => null])->all();
+        if (count($pending_reminders) > 0) {
+            foreach ($pending_reminders as $canidate) {
+                //Invite candidates
+                $url = 'https://app.testgorilla.com/api/assessments/candidature/' . $canidate->candidate_id . '/send-reminder/';
+                $ch = curl_init($url);
+
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                $response = curl_exec($ch);
+
+                $conn = \Yii::$app->db;
+
+                $query = "insert into api_requests(request_url,request_data,response_data) value('" . $url . "','Bulk reminder','" . str_replace("'", " ", $response) . "')";
+                $conn->CreateCommand($query)->execute();
+
+                curl_close($ch);
+
+                //Update the current candidates information
+                if (strlen($response) < 5) {
+                    $reminder = \frontend\modules\hr\models\ApiAssessmentCandidateBulkReminder::find()->where(['id' => $canidate->id])->one();
+                    $reminder->sent_on = date('Y-m-d H:i:s');
+                    $reminder->save(false);
+                }
+            }
+        }
+    }
+
+    public function actionSyncSendBulkResultSending() {
+        //Load pending reminders
+        $pending_results = \frontend\modules\hr\models\ApiAssessmentCandidateBulkResultSend::find()->where(['sent_on' => null])->all();
+        if (count($pending_results) > 0) {
+            foreach ($pending_results as $canidate) {
+                //Invite candidates
+                $url = 'https://app.testgorilla.com/api/assessments/candidates/' . $canidate->test_taker_id . '/send-pdf/?candidature=' . $canidate->candidate_id;
+
+                $ch = curl_init($url);
+
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+                $response = curl_exec($ch);
+                $response_data = json_decode($response, true);
+                if (isset($response_data['ok']) && $response_data['ok'] == true) {
+                    $result = \frontend\modules\hr\models\ApiAssessmentCandidateBulkResultSend::find()->where(['id' => $canidate->id])->one();
+                    $result->sent_on = date('Y-m-d H:i:s');
+                    $result->save(false);
+                }
+
+                $conn = \Yii::$app->db;
+
+                $query = "insert into api_requests(request_url,request_data,response_data) value('" . $url . "','Bulk result sending ','" . str_replace("'", " ", $response) . "')";
+                $conn->CreateCommand($query)->execute();
+
+                curl_close($ch);
+            }
+        }
+    }
+
+    public function actionSyncBulkResultRemoval() {
+        //Load pending reminders
+        $pending_results = \frontend\modules\hr\models\ApiAssessmentCandidateBulkRemove::find()->where(['sent_on' => null])->all();
+        if (count($pending_results) > 0) {
+            foreach ($pending_results as $canidate) {
+                $selected_candidate = ApiAssessmentCandidate::find()->where(['candidate_id' => $canidate->candidate_id])->one();
+                if (isset($selected_candidate->candidate_id)) {
+                    //Invited candidates
+                    $url = 'https://app.testgorilla.com/api/assessments/candidature/' . $canidate->candidate_id;
+
+                    $ch = curl_init($url);
+
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+
+                    $response = curl_exec($ch);
+                    $response_data = json_decode($response, true);
+                    curl_close($ch);
+
+                    $conn = \Yii::$app->db;
+
+                    $query = "insert into api_requests(request_url,request_data,response_data) value('" . $url . "','Bulk Delete candidate','" . str_replace("'", " ", $response) . "')";
+                    $conn->CreateCommand($query)->execute();
+                    if (!isset($response_data['detail'])) {
+                        $result = \frontend\modules\hr\models\ApiAssessmentCandidateBulkRemove::find()->where(['id' => $canidate->id])->one();
+                        $result->sent_on = date('Y-m-d H:i:s');
+                        $result->save(false);
+                    }
+                }
+            }
+        }
     }
 
     /**

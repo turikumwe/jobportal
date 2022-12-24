@@ -69,7 +69,7 @@ CrudAsset::register($this);
                     <div class="col-sm-12">
                         <div class="pxp-company-dashboard-job-title"> 	
                             <div class="pxp-candiadates-card-1-name" style="font-size: 30px;"> 	<?= $assessment->name; ?> </div>
-                            <div class="pxp-candiadates-card-1-title" style="font-size: 20px;font-size: 20px;"><i class="fa fa-flash"></i> <?= ApiAssessmentTest::find()->where(['assessment_id'=>$assessment->id])->count() ?> Test | <i class="fa fa-clock-o"></i> <?= ApiAssessments::get_assessment_duration($assessment->id) ?> Minutes | <i class="fa fa-flag-o" ></i> <?= ApiAssessments::get_assessment_duration($assessment->id) ?> Minutes | <i class="fa fa-flag-o" ></i> <?= isset(ApiAssessments::LANGUAGE_DICT['' . $assessment->language . '']) ? ApiAssessments::LANGUAGE_DICT['' . $assessment->language . ''] : $assessment->language ?></div>
+                            <div class="pxp-candiadates-card-1-title" style="font-size: 20px;font-size: 20px;"><i class="fa fa-flash"></i> <?= ApiAssessmentTest::find()->where(['assessment_id'=>$assessment->id])->count() ?> Test | <i class="fa fa-clock-o" ></i> <?= ApiAssessments::get_assessment_duration($assessment->id) ?> Minutes | <i class="fa fa-flag-o" ></i> <?= isset(ApiAssessments::LANGUAGE_DICT['' . $assessment->language . '']) ? ApiAssessments::LANGUAGE_DICT['' . $assessment->language . ''] : $assessment->language ?></div>
                         </div>
                     </div>
 
@@ -242,13 +242,13 @@ CrudAsset::register($this);
                             <div class="row justify-content-between align-content-center">
                                 <div class="col-auto order-2 order-sm-1">
                                     <div class="pxp-company-dashboard-jobs-bulk-actions mb-3">
-                                        <select class="form-select" id="status">
+                                        <select class="form-select" id="action">
                                             <option>Bulk actions</option>
                                             <option value="1">Send reminder</option>
                                             <option value="2">Send results to candidates</option>
                                             <option value="3">Remove from assessment</option>
                                         </select>
-                                        <button class="btn ms-2" onclick="return change_status();">Apply</button>
+                                        <button class="btn ms-2" onclick="return apply_bulk_action();">Apply</button>
                                     </div>
                                 </div>
                                 <div class="col-auto order-1 order-sm-2">
@@ -267,10 +267,11 @@ CrudAsset::register($this);
                             </div>
                             <?php if (count($assessment_candidates) > 0) { ?>
                                 <div class="table-responsive">
-                                    <?php $form = ActiveForm::begin(['id' => 'job_list', 'action' => Yii::$app->link->frontendUrl('/service/service-job/update-status')]); ?>
+                                    <?php $form = ActiveForm::begin(['id' => 'bulk_candidate_action', 'action' => Yii::$app->link->frontendUrl('/hr/assessments/send-bulk')]); ?>
                                     <table class="table table-hover align-middle">
                                         <thead>
                                             <tr>
+                                                <th class="pxp-is-checkbox" style="width: 1%;"><input type="checkbox" class="form-check-input" id="selectAll"></th>
                                                 <th style="width: 5%;">#</th>
                                                 <th style="width: 40%;">Candidate names</th>
                                                 <th style="width: 20%;">Invited on</th>
@@ -287,6 +288,7 @@ CrudAsset::register($this);
                                                 $candidate_user = \common\models\UserProfile::find()->where(['user_id' => $candidate->user_id])->one();
                                                 ?>
                                                 <tr>
+                                                    <td><input type="checkbox" class="form-check-input checkboxAll" name="ids[]" value="<?= $candidate->id; ?>" class="job_selection"></td>
                                                     <td><?= $counter ?></td>
                                                     <td>
                                                         <a href="<?= Yii::$app->link->frontendUrl('/hr/assessments/assessment-candidate?id=' . $assessment->id . '&tt_id=' . $candidate->testtaker_id) ?>">
@@ -315,7 +317,7 @@ CrudAsset::register($this);
 
                                         </tbody>
                                     </table>
-                                    <input type="hidden" id="selected_status" name="selected_status" value="" />
+                                    <input type="hidden" id="bulk_action" name="bulk_action" value="" />
                                     <?php ActiveForm::end(); ?>
                                     <div class="row mt-4 justify-content-between align-items-center">
                                         <div class="col-auto">
@@ -333,7 +335,6 @@ CrudAsset::register($this);
                             <?php ActiveForm::begin(['id' => 'delete_candidate', 'method' => 'POST', 'action' => Yii::$app->link->frontendUrl('/hr/assessments/delete-candidate')]); ?>
                             <input type="hidden" name="candidate_id" id="candidate_id" value="" />
                             <?php ActiveForm::end(); ?>
-
                         </div>
                     </div>
                 </div>
@@ -377,13 +378,13 @@ CrudAsset::register($this);
             }
         });
     }
-    function change_status() {
+    function apply_bulk_action() {
         var total_checked = $("input[type='checkbox']:checked").length;
 
-        if (parseInt($('#status :selected').val()) && total_checked > 0) {
-            if (confirm("Are sure you want to change the Job Status?")) {
-                $('#selected_status').val($('#status :selected').val());
-                $("#job_list").submit();
+        if (parseInt($('#action :selected').val()) && total_checked > 0) {
+            if (confirm("Are sure you want to send reminders to the selected candidates?")) {
+                $('#bulk_action').val($('#action :selected').val());
+                $("#bulk_candidate_action").submit();
             }
 
         } else {

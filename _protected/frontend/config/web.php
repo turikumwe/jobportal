@@ -1,4 +1,5 @@
 <?php
+
 $config = [
     'homeUrl' => Yii::getAlias('@frontendUrl'),
     'controllerNamespace' => 'frontend\controllers',
@@ -13,11 +14,9 @@ $config = [
         'jobseeker' => [
             'class' => frontend\modules\jobseeker\Settings::class,
         ],
-
         'employer' => [
             'class' => 'frontend\modules\employer\Module',
         ],
-
         'mediator' => [
             'class' => 'frontend\modules\mediator\module',
         ],
@@ -86,15 +85,12 @@ $config = [
             'enableAutoLogin' => true,
             'as afterLogin' => common\behaviors\LoginTimestampBehavior::class
         ],
-
         'jobPortalModal' => [
             'class' => common\components\popup\JobPortalModal::class,
         ],
-
         'link' => [
             'class' => frontend\components\url\Link::class,
         ],
-
         'jobSeeker' => [
             'class' => frontend\components\menu\JobSeeker::class,
         ],
@@ -119,6 +115,20 @@ $config = [
         ],
         'myfield' => [
             'class' => frontend\components\myfield\Myfield::class,
+        ],
+        'session' => [
+            'timeout' => 1800, //Number of second before session expiration
+            'class' => 'yii\web\DbSession',
+            'sessionTable' => 'YiiSession',
+        ],
+        'user' => [
+            'identityClass' => 'common\models\User',
+            'enableAutoLogin' => false,
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        // uncomment if you want to cache RBAC items hierarchy
+        // 'cache' => 'cache',
         ],
     ]
 ];

@@ -269,6 +269,30 @@ class JobportalController extends Controller {
         $result = curl_exec($ch);
         echo $result;
     }
+    public function actionSyncBulkReminder() {
+        $ch = curl_init(Yii::getAlias('@FullfrontendUrl') . '/hr/api/sync-send-bulk-reminder');
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $result = curl_exec($ch);
+        echo $result;
+    }
+    public function actionSyncBulkResultSending() {
+        $ch = curl_init(Yii::getAlias('@FullfrontendUrl') . '/hr/api/sync-send-bulk-result-sending');
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $result = curl_exec($ch);
+        echo $result;
+    }
+    public function actionSyncBulkResultRemoval() {
+        $ch = curl_init(Yii::getAlias('@FullfrontendUrl') . '/hr/api/sync-bulk-result-removal');
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $result = curl_exec($ch);
+        echo $result;
+    }
 
     public function actionNotifyMatchingSkills() {
 
