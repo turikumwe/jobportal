@@ -69,14 +69,5 @@ return [
             return $model->registrationdate;
         },
     ],
-    [
-        'class' => 'kartik\grid\ActionColumn',
-        'dropdown' => false,
-        'vAlign'=>'middle',
-        'template' => '<span class="fa fa-eye"></span>',
-        'urlCreator' => function($action, $model, $key, $index) {
-                return Url::to('<span class="fa fa-eye"></span>',['index','idOtherProfile'=>$key,'visitor' => true]);
-        },
-        'viewOptions'=>['title'=>'View','data-toggle'=>'tooltip'],
-    ],
+    
 ];   

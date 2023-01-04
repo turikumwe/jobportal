@@ -64,7 +64,7 @@ class ApiAssessmentCandidateDetails extends \yii\db\ActiveRecord {
             [['assessment_name', 'invited', 'status', 'has_consumed_credit', 'content_type_name', 'average', 'is_exited_full_screen', 'is_left_screen', 'modified', 'last_activity', 'highlight', 'ip', 'repeated_ip', 'role', 'review', 'stage', 'reminder_sent', 'public_link', 'anti_cheating_photos_removed', 'is_camera_enabled', 'is_english_native_language', 'accessibility_condition_description', 'accessibility_condition_disclose', 'accessibility_condition_extra_time', 'total_extra_time', 'assessment_extra_time'], 'safe'],
             [['assessment_id', 'testtaker_id'], 'unique', 'targetAttribute' => ['assessment_id', 'testtaker_id']],
             [['candidate_id'], 'unique'],
-            [['assessment_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApiAssessments::class, 'targetAttribute' => ['assessment_id' => 'id']],
+            
         ];
     }
 
@@ -115,9 +115,7 @@ class ApiAssessmentCandidateDetails extends \yii\db\ActiveRecord {
      *
      * @return \yii\db\ActiveQuery|ApiAssessmentQuery
      */
-    public function getAssessment() {
-        return $this->hasOne(ApiAssessment::class, ['id' => 'assessment_id']);
-    }
+
 
     /**
      * {@inheritdoc}

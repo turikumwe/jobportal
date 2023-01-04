@@ -40,8 +40,18 @@ CrudAsset::register($this);
 
     <div class="pxp-dashboard-content-details">
         <div class="mt-4">
-
-
+            <?php
+            $params = Yii::$app->request->getQueryParams() != null ? Yii::$app->request->getQueryParams() : [];
+            $params[0] = ('/mediator/report-opportunities/export-data');
+            $export_url = Yii::$app->urlManager->createUrl($params);
+            ?>
+            <span>
+                <?= Html::a(Yii::t('app', 'Advanced Search'), '#', ['class' => 'btn btn-success search-button']) ?>
+            </span>
+            <div class="well search-form" style="display:none"> 
+                <?= $this->render('_search', ['model' => $searchModel]); ?> 
+            </div>
+            <br>
 
             <div class="table-responsive table-hover">
                 <?php \yii\widgets\Pjax::begin(['timeout' => 10000, 'clientOptions' => ['container' => 'pjax-container']]); ?>

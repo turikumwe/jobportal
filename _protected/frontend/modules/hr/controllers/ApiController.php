@@ -47,11 +47,13 @@ class ApiController extends Controller {
 
     public function actionSyncAssessments() {
 
+        ini_set('max_execution_time', '0'); // for infinite time of execution 
+
         $url = 'https://app.testgorilla.com/api/assessments?limit=10000';
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($ch);
@@ -101,10 +103,12 @@ class ApiController extends Controller {
                 if (!$assessment->save()) {
                     error_log("Assessment creation error");
                     error_log(json_encode($assessment->errors));
+                } else {
+                    //Sync assessment details
+                    $this->actionSyncAssessmentDetails($assessment->id);
                 }
             }
             $sync_assessment_update = "update api_syncing set sync_ended = now(), is_syncing = 0 where object_name = 'assessment'";
-            $conn->CreateCommand($sync_assessment_update)->execute();
             $conn->CreateCommand($sync_assessment_update)->execute();
         }
     }
@@ -116,7 +120,7 @@ class ApiController extends Controller {
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($ch);
@@ -290,9 +294,6 @@ class ApiController extends Controller {
                                             $assessment_synchronization->sync_ended = date("Y-m-d H:i:s");
                                             $assessment_synchronization->is_syncing = 0;
                                             $assessment_synchronization->save();
-
-                                            //Call the candidate synchronization action
-                                            $this->redirect(Yii::getAlias('@FullfrontendUrl') . '/hr/api/sync-assessment-candidates?id=' . $current_assessment->id);
                                         }
                                     }
                                 }
@@ -310,6 +311,7 @@ class ApiController extends Controller {
                 var_dump($assessment_details->errors);
                 die;
             }
+            $this->actionSyncAssessmentCandidates($current_assessment->id);
         }
     }
 
@@ -328,7 +330,7 @@ class ApiController extends Controller {
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $result = curl_exec($ch);
@@ -362,7 +364,7 @@ class ApiController extends Controller {
 
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
                 $response = curl_exec($ch);
@@ -429,7 +431,7 @@ class ApiController extends Controller {
 
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
                 $response = curl_exec($ch);
@@ -487,7 +489,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -506,7 +508,6 @@ class ApiController extends Controller {
                 array_push($registered_candidates_ids, $candidate_data['id']);
                 //Update the current candidates information
                 $candidate = ApiAssessmentCandidate::find()->where(['email' => $candidate_data['email']])->andWhere(['assessment_id' => $selected_assessment->id])->one();
-                echo $candidate_data['email'] . ' - ' . $selected_assessment->id . '<br />';
                 if (isset($candidate->id)) {
 
                     $candidate->candidate_id = $candidate_data['id'];
@@ -584,20 +585,20 @@ class ApiController extends Controller {
             $candidate_details = ApiAssessmentCandidate::find()->where(['assessment_id' => $selected_assessment->id])->all();
             if (count($candidate_details) > 0) {
                 foreach ($candidate_details as $candidate_detail) {
-                    echo $candidate_detail->testtaker_id . '<br />';
+                    $this->actionSyncAssessmentCandidateDetails($candidate_detail->testtaker_id);
 
-                    chdir('' . Yii::getAlias('@root') . DIRECTORY_SEPARATOR . '_protected' . DIRECTORY_SEPARATOR . 'console' . '');
-                    if (substr(php_uname(), 0, 7) == "Windows") {
-                        //windows
-                        popen("start /B php yii jobportal/sync-asssessment-candidate-details " . $candidate_detail->testtaker_id . "", "r"); //Wait one by one until all candidates are fetched
-                    } else {
-                        //linux
-                        shell_exec("php yii jobportal/sync-asssessment-candidate-details " . $candidate_detail->testtaker_id . " > log.txt 2>&1 &");
-                    }
+//                    chdir('' . Yii::getAlias('@root') . DIRECTORY_SEPARATOR . '_protected' . DIRECTORY_SEPARATOR . 'console' . '');
+//                    if (substr(php_uname(), 0, 7) == "Windows") {
+//                        //windows
+//                        popen("start /B php yii jobportal/sync-asssessment-candidate-details " . $candidate_detail->testtaker_id . "", "r"); //Wait one by one until all candidates are fetched
+//                    } else {
+//                        //linux
+//                        shell_exec("php yii jobportal/sync-asssessment-candidate-details " . $candidate_detail->testtaker_id . " > log.txt 2>&1 &");
+//                    }
                 }
             }
             //Now delete all candidates who are not return from the list sent by the server
-            ApiAssessmentCandidate::deleteAll(['AND', 'assessment_id = '.$selected_assessment->id.'',['not in', 'candidate_id', $registered_candidates_ids]]);
+            ApiAssessmentCandidate::deleteAll(['AND', 'assessment_id = ' . $selected_assessment->id . '', ['not in', 'candidate_id', $registered_candidates_ids]]);
         }
     }
 
@@ -612,7 +613,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
@@ -644,7 +645,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -732,7 +733,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -773,7 +774,7 @@ class ApiController extends Controller {
                 $ch = curl_init($url);
 
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -821,7 +822,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -837,10 +838,13 @@ class ApiController extends Controller {
         return array("data" => $response_data);
     }
 
-    public function actionSyncAssessmentCandidateDetails() {
+    public function actionSyncAssessmentCandidateDetails($tt_id) {
 
         $request = Yii::$app->request;
         $testtaker_id = $request->get('tt_id');
+        if (!isset($testtaker_id)) {
+            $testtaker_id = $tt_id;
+        }
         $assessment = ApiAssessmentCandidate::find()->where(['testtaker_id' => $testtaker_id])->one();
 
         if (!isset($assessment->id)) {
@@ -852,7 +856,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -914,7 +918,7 @@ class ApiController extends Controller {
                     } else {
                         $test_result = new ApiAssessmentCandidateDetails();
                         $test_result->candidate_id = isset($candidate_data['id']) ? $candidate_data['id'] : null;
-                        $test_result->assessment_id = isset($candidate_data['assessment_id']) ? $candidate_data['assessment_id'] : null;
+                        $test_result->assessment_id = isset($candidate_data['assessment_id']) ? intval($candidate_data['assessment_id']) : null;
                         $test_result->testtaker_id = $testtaker_id;
                         $test_result->assessment_name = isset($candidate_data['assessment_name']) ? $candidate_data['assessment_name'] : null;
                         $test_result->invited = isset($candidate_data['invited']) ? $candidate_data['invited'] : null;
@@ -949,6 +953,7 @@ class ApiController extends Controller {
                         $test_result->assessment_extra_time = isset($candidate_data['assessment_extra_time']) ? $candidate_data['assessment_extra_time'] : null;
 
                         if (!$test_result->save()) {
+                            echo '<br />' . $candidate_data['assessment_id'] . '-' . json_encode($test_result->errors);
                             $candidate_sync = false;
                         }
                     }
@@ -957,9 +962,9 @@ class ApiController extends Controller {
         }
 
         if ($candidate_sync) {
-            return "Candidate details synced";
+            echo "Candidate details synced";
         } else {
-            return "Error ----- Candidate details not synced";
+            echo "Error ----- Candidate details not synced";
         }
     }
 
@@ -970,7 +975,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -996,7 +1001,7 @@ class ApiController extends Controller {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -1020,7 +1025,7 @@ class ApiController extends Controller {
                 $ch = curl_init($url);
 
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                 $response = curl_exec($ch);
@@ -1053,7 +1058,7 @@ class ApiController extends Controller {
                 $ch = curl_init($url);
 
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -1088,7 +1093,7 @@ class ApiController extends Controller {
                     $ch = curl_init($url);
 
                     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token c5dd15f5e3d539a88a8cd9b1ae0ef50d583e6809'));
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Token ' . \frontend\modules\hr\models\ApiAccessToken::getActiveAccessToken()));
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
@@ -1104,6 +1109,14 @@ class ApiController extends Controller {
                         $result = \frontend\modules\hr\models\ApiAssessmentCandidateBulkRemove::find()->where(['id' => $canidate->id])->one();
                         $result->sent_on = date('Y-m-d H:i:s');
                         $result->save(false);
+
+                        //Then delete the candidate
+                        $candidate = ApiAssessmentCandidate::find()->where(['candidate_id' => $canidate->candidate_id])->andWhere(['testtaker_id' => $canidate->test_taker_id])->one();
+                        $candidate->delete();
+
+                        //Then delete the candidate details
+                        $candidate_details = ApiAssessmentCandidateDetails::find()->where(['candidate_id' => $canidate->candidate_id])->andWhere(['testtaker_id' => $canidate->test_taker_id])->one();
+                        $candidate_details->delete();
                     }
                 }
             }

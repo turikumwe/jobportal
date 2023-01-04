@@ -29,7 +29,7 @@ $model->province = SDistrict::findOne($model->district_id)['province_id'];
     <br>
     <b>Form to Post Opportunity</b>
     <hr>
-    <?php $form = ActiveForm::begin(['action' => Yii::$app->link->frontendUrl($url)], ['options' => ['enctype' => 'multipart/form-data']]); ?>
+    <?php $form = ActiveForm::begin(['action' => Yii::$app->link->frontendUrl($url), 'id' => 'Job_Opportunity_Form'], ['options' => ['enctype' => 'multipart/form-data']]); ?>
 
     <?= $form->errorSummary($model); ?>
 
@@ -449,10 +449,8 @@ $model->province = SDistrict::findOne($model->district_id)['province_id'];
         let province = $("#job_province").val();
         let district = $("#job_district").val();
         let position = $("#job_position").val();
-
         let province_text = $("#job_province option:selected").text();
         let district_text = $("#job_district option:selected").text();
-
         $('#location tr:last').after(`
                                         <tr id="myTableRow_` + district + `"> 
                                                 <td width="30%"><input type="hidden" name ="ServiceJob[province][]" value="` + province + `">` + province_text + `</td>
@@ -481,6 +479,28 @@ $model->province = SDistrict::findOne($model->district_id)['province_id'];
             $('#other_institution').css("display", "none");
             $('#other_employer').attr('name', "Other");
         }
+    }
+
+    //$('#Job_Opportunity_Form').attr('onsubmit', 'return false;');
+
+    function validate_form_data() {
+        var data = $("#person-form-edit_person-form").serialize();
+
+
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo Yii::$app->link->frontendUrl('/service/service-job/validate-form-data') ?>',
+            data: data,
+            success: function (data) {
+                alert(data);
+            },
+            error: function (data) { // if error occured
+                alert("Error occured.please try again");
+                alert(data);
+            },
+
+            dataType: 'html'
+        });
     }
 
 </script>

@@ -151,7 +151,7 @@ class ServiceJobSearch extends ServiceJob {
 
     public function searchAll($params, $opportunity, $type, $search) {
 
-        $query = ServiceJob::find()->opportunity($opportunity)->available();
+        $query = ServiceJob::find()->opportunity($opportunity);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

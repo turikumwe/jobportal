@@ -41,7 +41,7 @@ CrudAsset::register($this);
 
             <div class="pxp-dashboard-content-details">
                   
-                <div class="mt-4">
+                <div class="mt-4 mt-lg-5">
                     
                     <div class="table-responsive table-hover">
                        <?= $content;?> 

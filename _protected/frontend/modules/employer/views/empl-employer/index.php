@@ -68,56 +68,18 @@ $admin = (isset($_GET['visitor'])) ? "admin" : "";
                     <div class="pxp-dashboard-stats-card-icon text-danger">
                         <span class="fa fa-bell-o"></span>
                     </div>
+                    <?php
+                    $user_notifications = common\models\SNotifications::find()->where(['user_id' => Yii::$app->user->identity->id])->all();
+                    ?>
                     <div class="pxp-dashboard-stats-card-info">
-                        <div class="pxp-dashboard-stats-card-info-number">5</div>
+                        <div class="pxp-dashboard-stats-card-info-number"><?= count($user_notifications) ?></div>
                         <div class="pxp-dashboard-stats-card-info-text pxp-text-light">Notifications</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mt-4">
-            <div class="col-xl-6">
-                <h2>Company Profile Visits</h2>
-                <div class="mt-3 mt-lg-4 pxp-dashboard-chart-container">
-                    <div class="row justify-content-between align-content-center mb-4">
-                        <div class="col-auto">
-                            <span class="pxp-dashboard-chart-value">154</span><span class="pxp-dashboard-chart-percent text-success"><span class="fa fa-long-arrow-up"></span> 34%</span><span class="pxp-dashboard-chart-vs">vs last 7 days</span>
-                        </div>
-                        <div class="col-auto">
-                            <select class="form-select">
-                                <option value="-7 days">Last 7 days</option>
-                                <option value="-30 days">Last 30 days</option>
-                                <option value="-60 days">Last 60 days</option>
-                                <option value="-90 days">Last 90 days</option>
-                                <option value="-12 months">Last 12 months</option>
-                            </select>
-                        </div>
-                    </div>
-                    <canvas id="pxp-company-dashboard-visits-chart"></canvas>
-                </div>
-            </div>
-            <div class="col-xl-6">
-                <h2 class="mt-4 mt-xl-0">Applications</h2>
-                <div class="mt-3 mt-lg-4 pxp-dashboard-chart-container">
-                    <div class="row justify-content-between align-content-center mb-4">
-                        <div class="col-auto">
-                            <span class="pxp-dashboard-chart-value">280</span><span class="pxp-dashboard-chart-percent text-success"><span class="fa fa-long-arrow-up"></span> 56%</span><span class="pxp-dashboard-chart-vs">vs last 7 days</span>
-                        </div>
-                        <div class="col-auto">
-                            <select class="form-select">
-                                <option value="-7 days">Last 7 days</option>
-                                <option value="-30 days">Last 30 days</option>
-                                <option value="-60 days">Last 60 days</option>
-                                <option value="-90 days">Last 90 days</option>
-                                <option value="-12 months">Last 12 months</option>
-                            </select>
-                        </div>
-                    </div>
-                    <canvas id="pxp-company-dashboard-app-chart"></canvas>
-                </div>
-            </div>
-        </div>
+        
     </div>
     <?php include(Yii::$app->basePath . "/views/layouts/user_footer.php") ?>
 </div>

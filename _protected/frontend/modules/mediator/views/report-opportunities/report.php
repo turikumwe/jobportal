@@ -13,9 +13,7 @@
 
             <nav class="mt-3 mt-lg-4 d-flex justify-content-between flex-column pb-100">
                 
-                <ul class="list-unstyled">
-                    <li> <?php include('leftindex.php'); ?></li>
-                        </ul>
+                
                 
             </nav>
 
@@ -27,7 +25,7 @@
 
             <div class="pxp-dashboard-content-details">
                 
-                <div class="mt-4">
+                <div class="mt-4 mt-lg-5">
                     
                     <div class="table-responsive table-hover">
                          

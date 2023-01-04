@@ -23,12 +23,17 @@ $search = "$('.search-button').click(function(){
 $this->registerJs($search);
 
 CrudAsset::register($this);
-
+$params = Yii::$app->request->getQueryParams() != null ? Yii::$app->request->getQueryParams() : [];
+$params[0] = ('/mediator/report-employer/export-databy-district');
+$export_url = Yii::$app->urlManager->createUrl($params);
 ?>
 
+<span>
+                    <?= Html::a(Yii::t('app', 'Advanced Search'), '#', ['class' => 'btn btn-success search-button']) ?>
+                </span>
 <div class="well search-form" style="display:none"> 
-    <?php /*echo  $this->render('_search', ['model' => $searchModel]); */?> 
-</div>
+    <?php echo $this->render('_search', ['model' => $searchModel]); ?> 
+</div><br>
  <div class="user-profile-index">
     <div id="ajaxCrudDatatable">
         <?php Pjax::begin(['id'=>'crud-datatable', 'timeout' => false,'enablePushState' => false,]);?>
@@ -62,7 +67,7 @@ CrudAsset::register($this);
             'responsive' => true,
             'panel' => [
                 'type' => '',
-                'heading' => '<font color="#000000">Number of Employers by District <a href="'.Yii::getAlias('@frontendUrl') . '/mediator/report-employer/export-databy-district'.'"><i class="fa fa-file-excel-o"> Export</i>',
+                'heading' => '<font color="#000000">Number of Employers by District <a href="'.$export_url.'"><i class="fa fa-file-excel-o"> Export</i>',
               
                 // 'before'=>'<em>* Resize table columns just like a spreadsheet by dragging the column edges.</em>',
                  '<div class="clearfix"></div>',

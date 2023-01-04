@@ -60,6 +60,8 @@ class EmplEmployer extends \yii\db\ActiveRecord {
     public $empl_email;
     public $empl_economic_sector;
     public $stat;
+    public $registration_start;
+    public $registration_end;
 
     public function __construct() {
         parent::__construct();

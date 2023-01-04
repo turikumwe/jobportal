@@ -204,6 +204,8 @@ class ServiceJobController extends Controller {
         if (isset($title)) {
             $published->query->andWhere(['like', 'service_job.jobtitle', '%' . htmlspecialchars($title) . '%', false]);
         }
+
+
         if (isset($sort) && $sort == 'R' && !Yii::$app->user->isGuest) {
             $published->query->leftJoin('jobskills', 'service_job.id = jobskills.job_id');
             $published->query->leftJoin('js_skill', 'jobskills.skill_id = js_skill.skill_id and js_skill.user_id = ' . Yii::$app->user->id . '');
@@ -235,7 +237,7 @@ class ServiceJobController extends Controller {
                 'O' => 'Oldest'
             );
         }
-
+        $published->query->andWhere(['>=', 'closure_date', date('Y-m-d')]);
 
         $districts = isset($_GET['displayAll']) ? SDistrict::find()->orderBy('district')->all() : SDistrict::find()->orderBy('district')->limit(5)->all();
 
@@ -489,7 +491,9 @@ class ServiceJobController extends Controller {
                     'url' => '/service/service-job/create',
                     'profile' => User::findOne(Yii::$app->user->id),
                     'skills' => $skills,
-                    'registered_assessments' => array(),
+                    'select' => array(),
+                    'registered_assessments' => \frontend\modules\hr\models\ApiAssessments::find()->all(),
+                    'selected_assessments' => array(),
                     'educationfields' => $educationFields,
                     'selected_job_skills' => array(),
                     'selected_education_field' => array(),
@@ -1116,7 +1120,6 @@ class ServiceJobController extends Controller {
                         }
                     }
                     return $this->redirect(['/service/service-job/my-jobs']);
-                    //return $this->redirect(['view', 'id' => $model->id]);
                 }
             }
         } else {

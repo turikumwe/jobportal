@@ -22,13 +22,18 @@ $search = "$('.search-button').click(function(){
 $this->registerJs($search);
 
 CrudAsset::register($this);
-$service = explode('/',$_SERVER['REDIRECT_URL'])[3];
+
+$params = Yii::$app->request->getQueryParams() != null ? Yii::$app->request->getQueryParams() : [];
+$params[0] = ('/mediator/report-opportunities/export-data');
+$export_url = Yii::$app->urlManager->createUrl($params);
 ?>
-
+<span>
+    <?= Html::a(Yii::t('app', 'Advanced Search'), '#', ['class' => 'btn btn-success search-button']) ?>
+</span>
 <div class="well search-form" style="display:none"> 
-    <?=  $this->render('_search', ['model' => $searchModel,'service' => $service]); ?> 
+    <?= $this->render('_search', ['model' => $searchModel]); ?> 
 </div>
-
+<br>
 <div class="user-profile-index">
     <div id="ajaxCrudDatatable">
         <?php Pjax::begin(['id'=>'crud-datatable', 'timeout' => false,'enablePushState' => false,]);?>
@@ -54,15 +59,13 @@ $service = explode('/',$_SERVER['REDIRECT_URL'])[3];
 
             'class' => 'yii\widgets\CustomLinkPager',
 
-            //other pager config if nesessary
-
         ],
             'striped' => true,
             'condensed' => true,
             'responsive' => true,
             'panel' => [
                 'type' => '',
-                'heading' => '<font color="#000000">Opportunities Report <a href="'.Yii::getAlias('@frontendUrl') . '/mediator/report-opportunities/export-data'.'"><i class="fa fa-file-excel-o"> Export</i>',
+                'heading' => '<font color="#000000">Opportunities Report <a href="'.$export_url.'"><i class="fa fa-file-excel-o"> Export</i>',
             
                 // 'before'=>'<em>* Resize table columns just like a spreadsheet by dragging the column edges.</em>',
                  '<div class="clearfix"></div>',

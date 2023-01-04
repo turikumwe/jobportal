@@ -135,7 +135,7 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                                             <form method="get" action="removeitem" name="test">
                                                 <input type='hidden' name='summaryid' value='<?= $summ['id']; ?>'> 
                                             </form>
-                                        <?php
+                                            <?php
                                         }
                                     }
                                     ?>
@@ -144,15 +144,15 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                                         <div class="pxp-single-candidate-skills">
                                             <table><tr>
                                                 <ul class="list-unstyled">
-                                                        <?php foreach ($skills as $skill) { ?>
+                                                    <?php foreach ($skills as $skill) { ?>
                                                         <li><?= (isset($skill['skill'])) ? $skill['skill'] : ''; ?>(<?= (isset($skill['level'])) ? $skill['level'] : ''; ?>)
-    <?php if (Yii::$app->user->can('user')) { ?> <span class="badge rounded-pill"><a href="removeitem=<?= $skill['id']; ?>" onclick="document.test.action = encodeURIComponent(this.getAttribute('href')); document.forms['test'].submit(); return false;"><span class="fa fa-trash-o" title='Remove item'></span></a></span>
+                                                            <?php if (Yii::$app->user->can('user')) { ?> <span class="badge rounded-pill"><a href="removeitem=<?= $skill['id']; ?>" onclick="document.test.action = encodeURIComponent(this.getAttribute('href')); document.forms['test'].submit(); return false;"><span class="fa fa-trash-o" title='Remove item'></span></a></span>
                                                                 <form method="get" action="removeitem" name="test">
                                                                     <input type='text' name='skillid' value='<?= $skill['id']; ?>'> 
                                                                 </form><?php } ?>
 
                                                         </li>
-<?php } ?>
+                                                    <?php } ?>
                                                 </ul></tr></table>
                                         </div>
                                     </div>
@@ -180,7 +180,7 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                                                     </div>
                                                 </div>
 
-<?php } ?> 
+                                            <?php } ?> 
 
                                         </div>
                                     </div>
@@ -205,7 +205,7 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                                                     </div>
                                                 </div>
 
-<?php } ?> 
+                                            <?php } ?> 
 
                                         </div>
                                     </div>
@@ -229,7 +229,7 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                                                     </div>
                                                 </div>
 
-<?php } ?> 
+                                            <?php } ?> 
 
                                         </div>
                                     </div>
@@ -259,7 +259,7 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                                                     </div>
                                                 </div>
 
-<?php } ?> 
+                                            <?php } ?> 
 
                                         </div>
                                     </div>
@@ -284,7 +284,7 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                                                     </div>
                                                 </div>
 
-<?php } ?> 
+                                            <?php } ?> 
 
                                         </div>
                                     </div>
@@ -321,7 +321,7 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                                             <td><div class="pxp-single-candidate-side-info-label pxp-text-lighta">Names</div> <?php $fname = common\models\UserProfile::findOne($userid); ?>
                                                 <?= (isset($fname->firstname)) ? $fname->firstname : ''; ?>
                                                 <?php $lname = common\models\UserProfile::findOne($userid); ?>
-<?= (isset($lname->lastname)) ? $lname->lastname : ''; ?> </td>
+                                                <?= (isset($lname->lastname)) ? $lname->lastname : ''; ?> </td>
                                         </tr>
                                         <tr>
                                             <td><div class="pxp-single-candidate-side-info-label pxp-text-lighta">Email </div><?php $email = common\models\User::findone($userid) ?> <?= (isset($email->email)) ? $email->email : ''; ?></td>
@@ -362,7 +362,7 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
 
 
                                             </tr> 
-<?php } ?>
+                                        <?php } ?>
                                         <tr>
                                             <td><div class="pxp-single-candidate-side-info-label pxp-text-lighta">Country </div><?php
                                                 $country = \common\models\UserProfile::findOne($userid)->nationality;
@@ -375,7 +375,7 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
 
                                 <div class="pxp-single-candidate-side-panel mt-4 mt-lg-5">
                                     <h3>Contact <?php $fname = common\models\UserProfile::findOne($userid); ?>
-<?= (isset($fname->firstname)) ? $fname->firstname : ''; ?></h3>
+                                        <?= (isset($fname->firstname)) ? $fname->firstname : ''; ?></h3>
                                     <form class="mt-4">
                                         <div class="mb-3">
                                             <label for="contact-candidate-name" class="form-label">Name</label>
@@ -462,7 +462,7 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                 <form action='newitem' class="form-horizontal form-label-left input_mask" method="get" id="add" name="add" enctype="multipart/form-data">
                     <div class="form-group"" >
                         <div class="col-md-9 col-sm-9 col-xs-12"  style="float: left; width:70px;">
-<?= include('experience.php'); ?>
+                            <?= include('experience.php'); ?>
                         </div>
                     </div>
                     <br><br>

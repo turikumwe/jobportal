@@ -6,7 +6,6 @@ use yii\bootstrap\Modal;
 use kartik\grid\GridView;
 use johnitvn\ajaxcrud\CrudAsset;
 use johnitvn\ajaxcrud\BulkButtonWidget;
-use kartik\export\ExportMenu;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\UserProfileSearch */
@@ -29,7 +28,7 @@ CrudAsset::register($this);
 <div class="well search-form" style="display:none"> 
     <?php /*echo  $this->render('_search', ['model' => $searchModel]); */?> 
 </div>
- 
+
 <div class="user-profile-index">
     <div id="ajaxCrudDatatable">
         <?php Pjax::begin(['id'=>'crud-datatable', 'timeout' => false,'enablePushState' => false,]);?>
@@ -51,19 +50,12 @@ CrudAsset::register($this);
                     '{export}'
                 ],
             ],
-            'pager' => [
-
-            'class' => 'yii\widgets\CustomLinkPager',
-
-            //other pager config if nesessary
-
-        ],
             'striped' => true,
             'condensed' => true,
             'responsive' => true,
             'panel' => [
                 'type' => '',
-                'heading' => '<font color="#000000">Employers</font> <a href="'.Yii::getAlias('@frontendUrl') . '/mediator/report-employer/export-data'.'"><i class="fa fa-file-excel-o"> Export</i>',
+                'heading' => '<font color="#000000">Employers</font>',
                 // 'before'=>'<em>* Resize table columns just like a spreadsheet by dragging the column edges.</em>',
                  '<div class="clearfix"></div>',
             ]
@@ -76,4 +68,3 @@ CrudAsset::register($this);
     "footer"=>"",// always need it for jquery plugin
 ])?>
 <?php Modal::end(); ?>
- 

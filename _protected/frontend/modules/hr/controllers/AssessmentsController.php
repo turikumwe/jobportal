@@ -308,7 +308,7 @@ class AssessmentsController extends Controller {
                         pclose(popen("start /B php yii jobportal/delete-candidate " . $request->post('candidate_id') . " 1> log.txt 2>&1 &", "r"));
                     } else {
                         //linux
-                        shell_exec("php yii jobportal/delete-candidate " . $request->post('candidate_id') . " > log.txt 2>&1 &");
+                        shell_exec("php yii jobportal/delete-candidate " . $request->post('candidate_id') . "  > /dev/null &");
                     }
                     Yii::$app->session->setFlash('success', " candidates scheduled for assessment deletion");
                 } else {
@@ -361,7 +361,7 @@ class AssessmentsController extends Controller {
                                 //shell_exec('php yii jobportal/send-mail-notifications &');
                             } else {
                                 //linux
-                                shell_exec("php yii jobportal/sync-bulk-reminder > log.txt 2>&1 &");
+                                shell_exec("php yii jobportal/sync-bulk-reminder  > /dev/null &");
                             }
                             $message = $bulked_candites . " candidates scheduled for assessment reminders.";
                             if ($not_bulked_candites > 0) {
@@ -404,7 +404,7 @@ class AssessmentsController extends Controller {
                                 //shell_exec('php yii jobportal/send-mail-notifications &');
                             } else {
                                 //linux
-                                shell_exec("php yii jobportal/sync-bulk-result-sending > log.txt 2>&1 &");
+                                shell_exec("php yii jobportal/sync-bulk-result-sending  > /dev/null &");
                             }
                             $message = $bulked_candites . " candidates scheduled for assessment results sending.";
                             if ($not_bulked_candites > 0) {
@@ -447,7 +447,7 @@ class AssessmentsController extends Controller {
                                 //shell_exec('php yii jobportal/send-mail-notifications &');
                             } else {
                                 //linux
-                                shell_exec("php yii jobportal/sync-bulk-result-removal > log.txt 2>&1 &");
+                                shell_exec("php yii jobportal/sync-bulk-result-removal  > /dev/null &");
                             }
                             $message = $bulked_candites . " candidates scheduled for assessment removal.";
                             if ($not_bulked_candites > 0) {
@@ -480,7 +480,7 @@ class AssessmentsController extends Controller {
                 pclose(popen("start /B php yii jobportal/sync-asssessments 1> log.txt 2>&1 &", "r"));
             } else {
                 //linux
-                shell_exec("php yii jobportal/sync-asssessments > log.txt 2>&1 &");
+                shell_exec("php yii jobportal/sync-asssessments  > /dev/null &");
             }
             return [
                 'data' => 'Success'
@@ -506,7 +506,7 @@ class AssessmentsController extends Controller {
                     pclose(popen("start /B php yii jobportal/sync-asssessment-details " . $assessment->id . " 1> log.txt 2>&1 &", "r"));
                 } else {
                     //linux
-                    shell_exec("php yii jobportal/sync-asssessment-details " . $assessment->id . " > log.txt 2>&1 &");
+                    shell_exec("php yii jobportal/sync-asssessment-details " . $assessment->id . "  > /dev/null &");
                 }
                 return [
                     'data' => 'Success'
@@ -592,7 +592,7 @@ class AssessmentsController extends Controller {
                 //shell_exec('php yii jobportal/send-mail-notifications &');
             } else {
                 //linux
-                shell_exec("php yii jobportal/invite-candidates " . $assessment_id . " > log.txt 2>&1 &");
+                shell_exec("php yii jobportal/invite-candidates " . $assessment_id . "  > /dev/null &");
             }
             if ($invited_candites == count($user_ids)) {
                 Yii::$app->session->setFlash('success', $invited_candites . " candidates scheduled for assessment invitation");

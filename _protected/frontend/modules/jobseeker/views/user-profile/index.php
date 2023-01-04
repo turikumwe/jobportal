@@ -42,7 +42,7 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                         <div class="pxp-hero-opacity"></div>
                         <div class="pxp-single-company-hero-caption">
                             <div class="pxp-single-company-hero-content d-block text-center">
-                                <a   data-bs-toggle="modal" href="#profile" style="text-decoration: none;" > 
+                                <a   data-bs-toggle="<?= ($userid == Yii::$app->user->identity->id) ? 'modal' : '' ?>" href="#profile" style="text-decoration: none;" > 
                                     <?php
                                     $profilepic = common\models\UserProfile::findOne($userid);
                                     if (isset($profilepic) && strlen($profilepic->profile) > 0) {
@@ -53,7 +53,8 @@ $side = (Yii::$app->user->can('employer') || Yii::$app->user->can('mediator')) ?
                                         ?>
                                         <div title='Click to edit picture' class="pxp-single-company-hero-logo d-inline-block" style="background-image: url(<?= Yii::getAlias('@staticUrl') ?>/profiles/noimage.png); width:128px; height:128px "  ></div>
 
-                                    <?php } ?>
+                                    <?php }
+                                    ?>
                                 </a>
                                 <div class="pxp-single-company-hero-title ms-0 mt-3">
                                     <h1><?php $fname = common\models\UserProfile::findOne($userid); ?>
